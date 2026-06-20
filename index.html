@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trivia de Revisiones Sistemáticas y Meta-análisis · Dr. Joshuan Barboza</title>
+<meta name="description" content="Trivia interactiva por pestañas para autoevaluar revisiones sistemáticas y meta-análisis: PICO, elegibilidad, sesgos, forest plot, funnel plot, GRADE y más.">
+<style>
+:root{
+  --bg:#eef3f8;
+  --ink:#152330;
+  --muted:#5d7284;
+  --line:#dde6ee;
+  --panel:#ffffff;
+  --brand:#0a6e8a;
+  --brand2:#13a3c6;
+  --brand-d:#085c74;
+  --accent:#f4a259;
+  --ok:#1c8c5b;--ok-bg:#e6f7ee;
+  --bad:#cf3a2b;--bad-bg:#fdecea;
+  --warn:#b9770e;
+  --shadow:0 14px 40px rgba(11,40,60,.10);
+  --shadow-sm:0 4px 14px rgba(11,40,60,.08);
+  --radius:18px;
+  --sec:#0a6e8a; /* color de la sección activa, se sobreescribe por JS */
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink);background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px 70px}
+h1,h2,h3,h4{line-height:1.2}
+
+/* ---------- HERO ---------- */
+.hero{
+  position:relative;overflow:hidden;color:#eaf6fb;
+  background:linear-gradient(135deg,#0a2a3a 0%,#0a6e8a 55%,#13a3c6 120%);
+}
+.hero .wrap{padding-top:30px;padding-bottom:26px}
+.hero .kicker{letter-spacing:.2em;text-transform:uppercase;font-size:.7rem;font-weight:700;color:#8fe3f6}
+.hero h1{font-size:2rem;margin:.25em 0 .15em;color:#fff;max-width:680px}
+.hero .sub{margin:.1em 0;color:#cfe8f2}
+.hero .author{color:#ffd9a8;font-weight:600}
+.hero .badges{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.hero .badge{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 12px;font-size:.76rem;color:#eaf6fb}
+.hero .deco{position:absolute;right:-10px;bottom:-20px;width:280px;opacity:.22;pointer-events:none}
+@media(max-width:640px){.hero .deco{display:none}.hero h1{font-size:1.5rem}}
+
+/* ---------- TABS ---------- */
+.tabsbar{position:sticky;top:0;z-index:30;background:rgba(238,243,248,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.tabs{max-width:1000px;margin:0 auto;display:flex;gap:8px;overflow-x:auto;padding:11px 16px;scrollbar-width:thin}
+.tabs::-webkit-scrollbar{height:6px}
+.tabs::-webkit-scrollbar-thumb{background:#c3d2de;border-radius:99px}
+.tab{
+  flex:0 0 auto;display:flex;align-items:center;gap:7px;cursor:pointer;white-space:nowrap;
+  border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 15px;font-size:.86rem;
+  font-weight:600;color:var(--ink);transition:.15s;
+}
+.tab .ic{font-size:1.05rem;line-height:1}
+.tab:hover{border-color:var(--brand2);transform:translateY(-1px)}
+.tab.on{color:#fff;border-color:transparent;box-shadow:var(--shadow-sm)}
+
+/* ---------- CARDS ---------- */
+.card{background:var(--panel);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin:20px 0}
+.card.tight{padding:20px}
+.lead{color:var(--muted);margin:.2em 0 1em}
+.muted{color:var(--muted);font-size:.86rem}
+
+/* Section hero card */
+.sec-hero{display:flex;gap:20px;align-items:center;border-radius:var(--radius);overflow:hidden;
+  background:linear-gradient(135deg,#fff, #fbfdff);border:1px solid var(--line);box-shadow:var(--shadow);padding:24px;margin:20px 0}
+.sec-hero .emoji{flex:0 0 78px;height:78px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:2.3rem;
+  background:var(--sec);color:#fff;box-shadow:0 8px 22px rgba(10,60,80,.25)}
+.sec-hero h2{margin:.05em 0 .2em;font-size:1.5rem}
+.sec-hero .desc{color:var(--muted);margin:0;font-size:.96rem}
+.sec-illus{margin:0 0 18px;border-radius:14px;border:1px solid var(--line);background:#fafdff;padding:14px;text-align:center}
+.sec-illus svg{max-width:100%;height:auto}
+.sec-illus .cap{font-size:.78rem;color:var(--muted);margin-top:6px}
+
+.chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 15px;cursor:pointer;font-size:.85rem;color:var(--ink);transition:.15s}
+.chip:hover{border-color:var(--brand2)}
+.chip.on{background:var(--sec);color:#fff;border-color:var(--sec)}
+
+.btn{border:0;border-radius:13px;padding:13px 24px;font-size:1rem;font-weight:700;cursor:pointer;color:#fff;background:var(--sec);transition:.15s;box-shadow:0 8px 18px rgba(10,80,100,.22)}
+.btn:hover{filter:brightness(.94);transform:translateY(-1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.ghost{background:#fff;color:var(--sec);border:2px solid var(--sec);box-shadow:none}
+.btn.ghost:hover{background:rgba(0,0,0,.03)}
+.btn.accent{background:var(--accent);color:#3a2a12;box-shadow:0 8px 18px rgba(244,162,89,.3)}
+.btn.sm{padding:9px 16px;font-size:.9rem}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+
+/* ---------- QUIZ ---------- */
+.progress{height:9px;background:var(--line);border-radius:999px;overflow:hidden;margin:4px 0 18px}
+.progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sec),var(--brand2));transition:width .35s}
+.qmeta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px;font-size:.76rem}
+.tag{border-radius:999px;padding:3px 11px;font-weight:700}
+.tag.count{background:#eef2f6;color:var(--muted)}
+.tag.sec{background:color-mix(in srgb,var(--sec) 14%,#fff);color:var(--sec)}
+.tag.basico{background:var(--ok-bg);color:var(--ok)}
+.tag.intermedio{background:#fef3e0;color:var(--warn)}
+.tag.avanzado{background:var(--bad-bg);color:var(--bad)}
+.qtext{font-size:1.2rem;font-weight:650;margin:4px 0 18px}
+.opts{display:flex;flex-direction:column;gap:11px}
+.opt{display:flex;gap:13px;align-items:flex-start;border:2px solid var(--line);border-radius:13px;padding:14px 16px;cursor:pointer;background:#fff;transition:.12s;font-size:1rem}
+.opt:hover{border-color:var(--brand2);background:#f7fbfd}
+.opt .key{flex:0 0 28px;height:28px;border-radius:8px;background:#eef2f6;color:var(--muted);display:flex;align-items:center;justify-content:center;font-weight:800}
+.opt.correct{border-color:var(--ok);background:var(--ok-bg)}
+.opt.correct .key{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.opt.wrong .key{background:var(--bad);color:#fff}
+.opt.disabled{cursor:default}
+.opt.dim{opacity:.65}
+.fb{margin-top:16px;border-radius:13px;padding:15px 17px;font-size:.95rem;display:none}
+.fb.show{display:block}
+.fb.good{background:var(--ok-bg);border-left:5px solid var(--ok)}
+.fb.bad{background:var(--bad-bg);border-left:5px solid var(--bad)}
+.fb h4{margin:0 0 6px;font-size:1.02rem}
+.fb .why{margin-top:11px;padding-top:11px;border-top:1px dashed rgba(0,0,0,.13);color:#27343f}
+.fb .src{margin-top:8px;font-size:.82rem;color:var(--muted);font-style:italic}
+.navrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px}
+
+/* ---------- SCORE ---------- */
+.scorebox{text-align:center;padding:6px 0}
+.ring{margin:6px auto 8px;width:128px;height:128px}
+.score-msg{color:var(--muted);max-width:440px;margin:6px auto 0}
+.bars{margin-top:18px;text-align:left}
+.barline{display:flex;align-items:center;gap:10px;margin:7px 0;font-size:.86rem}
+.barline .lbl{flex:0 0 44%}
+.barline .tr{flex:1;background:var(--line);border-radius:999px;height:11px;overflow:hidden}
+.barline .tr>i{display:block;height:100%;background:var(--sec)}
+.barline .pc{flex:0 0 48px;text-align:right;color:var(--muted)}
+
+/* ---------- HOME grid ---------- */
+.home-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:6px}
+.home-card{position:relative;border:1px solid var(--line);border-radius:16px;padding:18px;cursor:pointer;background:#fff;transition:.15s;overflow:hidden}
+.home-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.home-card .hc-ic{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:#fff;margin-bottom:10px}
+.home-card h3{margin:.1em 0 .25em;font-size:1.02rem}
+.home-card p{margin:0;font-size:.82rem;color:var(--muted)}
+.home-card .hc-n{position:absolute;top:14px;right:16px;font-size:.74rem;font-weight:700;color:var(--muted)}
+.home-card .stripe{position:absolute;left:0;top:0;bottom:0;width:5px}
+
+/* ---------- TIAB ---------- */
+.picos{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px;margin:14px 0}
+.picos .p{background:color-mix(in srgb,var(--sec) 8%,#fff);border:1px solid color-mix(in srgb,var(--sec) 18%,#fff);border-radius:11px;padding:10px 12px;font-size:.85rem}
+.picos .p b{display:block;color:var(--sec);font-size:.7rem;letter-spacing:.05em;text-transform:uppercase;margin-bottom:2px}
+.crit{display:flex;flex-direction:column;gap:9px;margin:10px 0}
+.crit label{display:flex;gap:11px;align-items:flex-start;border:2px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;transition:.12s}
+.crit label:hover{border-color:var(--brand2)}
+.crit input{margin-top:3px;width:18px;height:18px;accent-color:var(--sec)}
+.crit label.ok{border-color:var(--ok);background:var(--ok-bg)}
+.crit label.err{border-color:var(--bad);background:var(--bad-bg)}
+.crit .cfb{display:block;font-size:.82rem;margin-top:5px;color:#27343f}
+.tiab{border:2px solid var(--line);border-radius:14px;padding:17px;margin:13px 0;background:#fff}
+.tiab .ttl{font-weight:700;margin-bottom:6px}
+.tiab .abs{font-size:.92rem;color:#33424f}
+.tiab .actions{display:flex;gap:10px;margin-top:13px}
+.tiab .verdict{margin-top:13px;border-radius:11px;padding:12px 14px;font-size:.9rem;display:none}
+.tiab .verdict.show{display:block}
+.tiab.ok{border-color:var(--ok)}
+.tiab.err{border-color:var(--bad)}
+.verdict.good{background:var(--ok-bg);border-left:5px solid var(--ok)}
+.verdict.bad{background:var(--bad-bg);border-left:5px solid var(--bad)}
+.scn-pick{display:flex;flex-direction:column;gap:12px}
+.scn-card{border:2px solid var(--line);border-radius:14px;padding:17px;cursor:pointer;transition:.15s;background:#fff}
+.scn-card:hover{border-color:var(--brand2);transform:translateY(-1px)}
+.scn-card h3{margin:.1em 0 .3em;color:var(--sec)}
+.scn-card .based{font-size:.8rem;color:var(--muted)}
+
+.hidden{display:none!important}
+footer.site{text-align:center;color:var(--muted);font-size:.82rem;padding:10px 16px 0}
+footer.site a{color:var(--brand)}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Autoevaluación · Medicina basada en evidencia</div>
+    <h1>Trivia de Revisiones Sistemáticas y Meta-análisis</h1>
+    <p class="sub">Clases del <span class="author">Dr. Joshuan J. Barboza</span></p>
+    <div class="badges">
+      <span class="badge">Investigador RENACYT</span>
+      <span class="badge">Miembro Cochrane</span>
+      <span class="badge">USIL · Universidad Señor de Sipán</span>
+    </div>
+  </div>
+  <svg class="deco" viewBox="0 0 240 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g stroke="#ffffff" stroke-width="3" fill="none" opacity="0.9">
+      <line x1="120" y1="10" x2="120" y2="150" stroke-dasharray="5 5"/>
+      <line x1="60" y1="30" x2="150" y2="30"/><rect x="100" y="24" width="12" height="12" fill="#ffffff"/>
+      <line x1="80" y1="62" x2="180" y2="62"/><rect x="124" y="55" width="15" height="15" fill="#ffffff"/>
+      <line x1="50" y1="96" x2="140" y2="96"/><rect x="88" y="90" width="12" height="12" fill="#ffffff"/>
+    </g>
+    <polygon points="95,130 140,123 185,130 140,137" fill="#ffd9a8"/>
+  </svg>
+</header>
+
+<div class="tabsbar"><div class="tabs" id="tabs"></div></div>
+
+<div class="wrap">
+  <main id="panel"></main>
+  <footer class="site">
+    <p>Material educativo de autoevaluación · Dr. Joshuan J. Barboza · <a href="https://orcid.org/0000-0002-2896-1407" target="_blank" rel="noopener">ORCID 0000-0002-2896-1407</a></p>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   TRIVIA DE REVISIONES SISTEMÁTICAS Y META-ANÁLISIS
+   Clases del Dr. Joshuan J. Barboza
+   Banco de preguntas + módulo de elegibilidad (cribado TIAB)
+   ============================================================
+   Modelo de dato de cada pregunta:
+   {
+     sec: "<id de sección>",
+     lvl: "basico" | "intermedio" | "avanzado",
+     q:   "enunciado",
+     opts:["A","B","C","D"],
+     correct: <índice de la opción correcta>,
+     fb:  ["fundamento opción A", ...],   // uno por opción
+     why: "explicación general (opcional)",
+     src: "estudio/fuente de referencia (opcional)"
+   }
+   ============================================================ */
+
+const SECTIONS = [
+  { id: "pico",          name: "Pregunta de investigación y PICO",     icon: "❓" },
+  { id: "elegibilidad",  name: "Criterios de elegibilidad",            icon: "✅" },
+  { id: "busqueda",      name: "Búsqueda y estrategia",                icon: "🔎" },
+  { id: "seleccion",     name: "Selección de estudios y PRISMA",       icon: "🗂️" },
+  { id: "extraccion",    name: "Extracción de datos",                  icon: "📋" },
+  { id: "sesgo",         name: "Riesgo de sesgo (RoB2, NOS, QUADAS…)", icon: "⚖️" },
+  { id: "efecto",        name: "Medidas de efecto (RR, OR, MD, SMD)",  icon: "📐" },
+  { id: "modelos",       name: "Modelos de meta-análisis",             icon: "🧮" },
+  { id: "heterogeneidad",name: "Heterogeneidad (I², Q, τ²)",           icon: "🌡️" },
+  { id: "publicacion",   name: "Sesgo de publicación (funnel, Egger)", icon: "🫙" },
+  { id: "forest",        name: "Interpretación del forest plot",       icon: "🌲" },
+  { id: "grade",         name: "GRADE y certeza de la evidencia",      icon: "🏅" },
+  { id: "tipos",         name: "Tipos de revisiones",                  icon: "🧭" },
+  { id: "casos",         name: "Casos basados en estudios reales",     icon: "📚" }
+];
+
+const QUESTIONS = [
+/* ===================== PICO ===================== */
+{
+  sec:"pico", lvl:"basico",
+  q:"En el acrónimo PICO para una pregunta de intervención, ¿qué representa la letra «C»?",
+  opts:["Condición clínica","Comparador o control","Contexto del estudio","Cumplimiento (adherencia)"],
+  correct:1,
+  fb:[
+    "La condición clínica suele incluirse en la «P» (población/problema), no en la «C».",
+    "Correcto: «C» es el comparador o grupo control frente al cual se evalúa la intervención.",
+    "El contexto puede aparecer como «S» (setting) en variantes como PICOS, pero no es la «C» clásica.",
+    "La adherencia es un aspecto de la intervención o un desenlace, no la «C»."
+  ],
+  why:"PICO = Population/Problem, Intervention, Comparison, Outcome. El comparador define la pregunta tanto como la intervención."
+},
+{
+  sec:"pico", lvl:"intermedio",
+  q:"Para una revisión de RCTs de sacubitrilo/valsartán vs IECA o ARA-II sobre función renal en insuficiencia cardiaca, ¿cuál es el COMPARADOR (C) del PICO?",
+  opts:["Sacubitrilo/valsartán","IECA o ARA-II","Duplicación de la creatinina sérica","Pacientes con insuficiencia cardiaca"],
+  correct:1,
+  fb:[
+    "Esa es la intervención (I), no el comparador.",
+    "Correcto: el comparador son los IECA o ARA-II.",
+    "Eso es un desenlace (O), no el comparador.",
+    "Esa es la población (P), no el comparador."
+  ],
+  why:"En el estudio S5, I = sacubitrilo/valsartán, C = IECA/ARA-II, O = duplicación de creatinina, eGFR, hiperkalemia.",
+  src:"S5. Sacubitril/valsartán y función renal"
+},
+{
+  sec:"pico", lvl:"intermedio",
+  q:"Una revisión sistemática de exactitud diagnóstica suele estructurar su pregunta con un esquema tipo PIRT/PIRD. ¿Qué representa la «R»?",
+  opts:["Riesgo basal","Estándar de referencia (reference standard)","Resultado (outcome)","Reproducibilidad"],
+  correct:1,
+  fb:[
+    "El riesgo basal no es un componente del esquema PIRT/PIRD.",
+    "Correcto: en estudios de exactitud diagnóstica la «R» es el estándar de referencia con el que se compara la prueba índice.",
+    "El outcome en diagnóstico se expresa como sensibilidad/especificidad, no como la «R».",
+    "La reproducibilidad es una propiedad de la prueba, no el componente «R»."
+  ],
+  why:"En diagnóstico: P = pacientes, I = prueba índice, R = estándar de referencia, T/D = target (diagnóstico objetivo)."
+},
+{
+  sec:"pico", lvl:"basico",
+  q:"¿Cuál es la principal función de formular una buena pregunta PICO antes de iniciar la revisión?",
+  opts:["Aumentar el número de estudios incluidos","Definir y delimitar los criterios de elegibilidad y la estrategia de búsqueda","Garantizar significancia estadística","Evitar la evaluación del riesgo de sesgo"],
+  correct:1,
+  fb:[
+    "El objetivo no es maximizar el número de estudios, sino responder con precisión la pregunta.",
+    "Correcto: el PICO es la base de los criterios de elegibilidad y de la estrategia de búsqueda.",
+    "El PICO no determina ni garantiza la significancia estadística de los resultados.",
+    "El riesgo de sesgo se evalúa siempre, con independencia del PICO."
+  ]
+},
+{
+  sec:"pico", lvl:"avanzado",
+  q:"En el estudio de detección del virus mpox según el sitio de muestra, el objetivo era estimar proporciones (p. ej., % de muestras positivas por sitio). ¿Qué variante del marco de pregunta es más apropiada?",
+  opts:["PICO con comparador activo","PECO de exposición-desenlace","CoCoPop (Condición, Contexto, Población) para estudios de prevalencia/proporción","PICOTS con seguimiento temporal"],
+  correct:2,
+  fb:[
+    "No hay un comparador activo: es una revisión de proporciones, no de efecto de una intervención.",
+    "PECO se usa para asociación exposición-desenlace, no para estimar una proporción.",
+    "Correcto: CoCoPop (Condición, Contexto, Población) es el marco recomendado por JBI para revisiones de prevalencia/proporción.",
+    "PICOTS añade tiempo y escenario a una pregunta de intervención, no aplica a una proporción descriptiva."
+  ],
+  why:"Las revisiones de proporción/prevalencia (como S3, mpox) usan marcos tipo CoCoPop en lugar de PICO de intervención.",
+  src:"S3. Detección de mpox"
+},
+
+/* ===================== ELEGIBILIDAD ===================== */
+{
+  sec:"elegibilidad", lvl:"basico",
+  q:"Los criterios de elegibilidad de una revisión sistemática se derivan principalmente de:",
+  opts:["Los resultados de los estudios encontrados","La pregunta PICO(S) definida a priori","El factor de impacto de las revistas","El número de revisores disponibles"],
+  correct:1,
+  fb:[
+    "Definir la elegibilidad según los resultados introduce sesgo de selección; deben fijarse a priori.",
+    "Correcto: los criterios se derivan del PICO(S) y se establecen antes de la búsqueda.",
+    "El factor de impacto no debe ser un criterio de inclusión/exclusión.",
+    "El número de revisores afecta la logística, no la definición de elegibilidad."
+  ]
+},
+{
+  sec:"elegibilidad", lvl:"intermedio",
+  q:"En el meta-análisis de insomnio y riesgo de depresión (estudios de cohorte prospectivos), se excluyeron los estudios con diseño retrospectivo y aquellos donde no se excluyó la depresión basal. ¿Por qué excluir a participantes con depresión al inicio?",
+  opts:["Para reducir el tamaño muestral","Para asegurar la temporalidad: el insomnio debe preceder a la depresión (incidencia, no prevalencia)","Porque la depresión basal mejora la homogeneidad estadística","Porque los estudios retrospectivos son más caros"],
+  correct:1,
+  fb:[
+    "No se busca reducir el tamaño muestral; eso debilitaría el estudio.",
+    "Correcto: excluir la depresión basal garantiza que se mide depresión incidente y se preserva la secuencia temporal exposición→desenlace.",
+    "No es una cuestión de homogeneidad estadística sino de validez causal/temporalidad.",
+    "El costo no es la razón; es un asunto de validez del diseño prospectivo."
+  ],
+  why:"En cohortes prospectivas la exposición debe preceder al desenlace; incluir casos prevalentes rompería esa lógica.",
+  src:"EJEMPLO 1. Insomnio y depresión (cohorte)"
+},
+{
+  sec:"elegibilidad", lvl:"intermedio",
+  q:"¿Cuál de los siguientes es típicamente un criterio de exclusión (no de inclusión) en una revisión de RCTs?",
+  opts:["Ensayo aleatorizado controlado","Población adulta con la condición de interés","Resumen de congreso sin reporte completo de datos","Comparación contra placebo"],
+  correct:2,
+  fb:[
+    "El diseño RCT suele ser criterio de inclusión, no de exclusión.",
+    "La población diana es un criterio de inclusión.",
+    "Correcto: resúmenes de congreso, cartas o comentarios sin datos completos suelen excluirse.",
+    "La comparación contra placebo suele ser parte de la inclusión (comparador)."
+  ]
+},
+{
+  sec:"elegibilidad", lvl:"avanzado",
+  q:"Al definir elegibilidad, ¿cuál es la diferencia clave entre 'criterios de elegibilidad' y 'estrategia de búsqueda'?",
+  opts:["Son sinónimos","La elegibilidad define QUÉ estudios califican; la búsqueda define CÓMO/DÓNDE localizarlos","La búsqueda se aplica solo después de la lectura a texto completo","La elegibilidad solo se aplica a meta-análisis"],
+  correct:1,
+  fb:[
+    "No son sinónimos: cumplen funciones distintas.",
+    "Correcto: la elegibilidad es el filtro conceptual (criterios); la búsqueda es el método operativo para recuperar candidatos.",
+    "La búsqueda se ejecuta al inicio para recuperar registros, no solo tras el texto completo.",
+    "La elegibilidad aplica a toda revisión sistemática, con o sin meta-análisis."
+  ]
+},
+{
+  sec:"elegibilidad", lvl:"basico",
+  q:"El uso de filtros de idioma (p. ej., solo inglés) como criterio de elegibilidad puede introducir:",
+  opts:["Sesgo de idioma","Mayor heterogeneidad clínica deseada","Sesgo de medición","Confusión residual"],
+  correct:0,
+  fb:[
+    "Correcto: restringir por idioma puede generar sesgo de idioma (language bias).",
+    "No incrementa la heterogeneidad deseada; restringe la evidencia disponible.",
+    "El sesgo de medición se relaciona con cómo se miden las variables, no con el idioma de publicación.",
+    "La confusión residual es un problema de los estudios primarios observacionales, no del filtro de idioma."
+  ]
+},
+
+/* ===================== BÚSQUEDA ===================== */
+{
+  sec:"busqueda", lvl:"basico",
+  q:"¿Cuántas bases de datos bibliográficas se recomienda buscar en una revisión sistemática rigurosa?",
+  opts:["Una sola (PubMed)","Al menos dos o más bases complementarias (p. ej., PubMed, Embase, Cochrane, Scopus, Web of Science)","Exactamente diez","No importa la cantidad si se usa Google"],
+  correct:1,
+  fb:[
+    "Buscar solo en PubMed deja fuera estudios indexados en otras bases; es insuficiente.",
+    "Correcto: se recomienda combinar varias bases (p. ej., MEDLINE/PubMed, Embase, Cochrane CENTRAL, Scopus, Web of Science).",
+    "No existe un número fijo de exactamente diez; depende del tema, pero deben ser múltiples bases.",
+    "Google Scholar puede complementar, pero no sustituye a bases estructuradas con búsqueda reproducible."
+  ],
+  why:"Los estudios de la carpeta buscan en 3–6 bases (p. ej., S1 en PubMed, Embase y Cochrane; S5 en 5 bases)."
+},
+{
+  sec:"busqueda", lvl:"intermedio",
+  q:"Los términos MeSH (Medical Subject Headings) sirven para:",
+  opts:["Restringir la búsqueda solo a títulos","Buscar mediante vocabulario controlado/indexado independientemente de las palabras exactas del autor","Eliminar duplicados automáticamente","Calcular el I² de heterogeneidad"],
+  correct:1,
+  fb:[
+    "Los MeSH no se limitan al título; indexan el contenido temático del artículo.",
+    "Correcto: los MeSH son vocabulario controlado que recupera artículos por concepto, complementando los términos en lenguaje libre.",
+    "La eliminación de duplicados es una tarea posterior (gestores de referencias), no función del MeSH.",
+    "El I² es una métrica estadística de heterogeneidad, no se relaciona con MeSH."
+  ]
+},
+{
+  sec:"busqueda", lvl:"intermedio",
+  q:"En una estrategia de búsqueda, los operadores booleanos AND y OR se usan para:",
+  opts:["AND amplía resultados; OR los restringe","AND combina conceptos distintos (restringe); OR reúne sinónimos (amplía)","Ambos amplían por igual","Solo sirven en Embase"],
+  correct:1,
+  fb:[
+    "Es al revés: AND restringe (intersección) y OR amplía (unión).",
+    "Correcto: AND interseca conceptos diferentes (reduce); OR une sinónimos del mismo concepto (aumenta sensibilidad).",
+    "No: tienen efectos opuestos sobre el número de resultados.",
+    "Los booleanos son universales, no exclusivos de Embase."
+  ]
+},
+{
+  sec:"busqueda", lvl:"avanzado",
+  q:"La búsqueda manual en listas de referencias de los artículos incluidos ('snowballing' o búsqueda en bola de nieve) busca principalmente:",
+  opts:["Inflar artificialmente el número de registros","Recuperar estudios relevantes no capturados por la búsqueda electrónica","Reemplazar la búsqueda en bases de datos","Reducir la sensibilidad de la búsqueda"],
+  correct:1,
+  fb:[
+    "No se trata de inflar registros, sino de mejorar la exhaustividad.",
+    "Correcto: complementa la búsqueda electrónica y recupera estudios que las bases no indexaron o que la estrategia no capturó.",
+    "Es complementaria, nunca un reemplazo de la búsqueda sistemática en bases.",
+    "Aumenta —no reduce— la sensibilidad/exhaustividad de la recuperación."
+  ],
+  src:"EJEMPLO 1 buscó también en listas de referencias de artículos recuperados"
+},
+
+/* ===================== SELECCIÓN / PRISMA ===================== */
+{
+  sec:"seleccion", lvl:"basico",
+  q:"El diagrama de flujo PRISMA documenta cuatro fases. ¿Cuál es el orden correcto?",
+  opts:["Inclusión → Cribado → Identificación → Elegibilidad","Identificación → Cribado → Elegibilidad → Inclusión","Cribado → Identificación → Inclusión → Elegibilidad","Elegibilidad → Inclusión → Cribado → Identificación"],
+  correct:1,
+  fb:[
+    "El orden está invertido; la identificación va primero.",
+    "Correcto: Identificación → Cribado (título/resumen) → Elegibilidad (texto completo) → Inclusión.",
+    "La identificación de registros es el primer paso, no el segundo.",
+    "El orden está completamente invertido."
+  ],
+  why:"PRISMA 2020 estandariza el reporte del flujo de selección de estudios."
+},
+{
+  sec:"seleccion", lvl:"intermedio",
+  q:"En el estudio de mpox se recuperaron 1022 artículos y se eliminaron 566 duplicados. ¿En qué fase del flujo PRISMA ocurre la eliminación de duplicados?",
+  opts:["Inclusión final","Identificación (antes del cribado)","Evaluación del riesgo de sesgo","Síntesis cuantitativa"],
+  correct:1,
+  fb:[
+    "Los duplicados se retiran mucho antes de la inclusión final.",
+    "Correcto: la eliminación de duplicados ocurre en la fase de identificación, antes del cribado por título/resumen.",
+    "El riesgo de sesgo se evalúa después de seleccionar los estudios incluidos.",
+    "La síntesis es la etapa final, posterior a toda la selección."
+  ],
+  src:"S3. Mpox (1022 recuperados, 566 duplicados, 65 incluidos)"
+},
+{
+  sec:"seleccion", lvl:"intermedio",
+  q:"¿Por qué se recomienda que la selección de estudios (cribado) la realicen al menos dos revisores de forma independiente?",
+  opts:["Para terminar más rápido","Para reducir errores y sesgo del revisor, midiendo la concordancia (p. ej., kappa)","Porque lo exige la ley","Para aumentar el número de estudios incluidos"],
+  correct:1,
+  fb:[
+    "El objetivo no es la rapidez; de hecho suele ser más lento pero más válido.",
+    "Correcto: dos revisores independientes reducen errores y sesgos de selección; la concordancia se puede cuantificar con el índice kappa.",
+    "No es una exigencia legal sino una buena práctica metodológica.",
+    "No busca aumentar inclusiones, sino decidir correctamente cuáles incluir."
+  ]
+},
+{
+  sec:"seleccion", lvl:"avanzado",
+  q:"Durante el cribado por título y resumen (TIAB), ante la duda razonable sobre si un estudio cumple los criterios, la conducta correcta es:",
+  opts:["Excluirlo de inmediato para ahorrar tiempo","Pasarlo a revisión de texto completo (ser inclusivo en el cribado)","Incluirlo directamente en el meta-análisis","Decidir según el factor de impacto de la revista"],
+  correct:1,
+  fb:[
+    "Excluir ante la duda en el cribado puede descartar estudios elegibles (falsos negativos).",
+    "Correcto: en el cribado por TIAB se es conservador; ante la duda, se avanza a texto completo donde hay más información.",
+    "No se incluye directamente: primero hay que verificar el texto completo.",
+    "El factor de impacto no es un criterio de elegibilidad válido."
+  ],
+  why:"El cribado TIAB prioriza la sensibilidad: mejor revisar de más a texto completo que perder un estudio elegible."
+},
+
+/* ===================== EXTRACCIÓN ===================== */
+{
+  sec:"extraccion", lvl:"basico",
+  q:"¿Cuál de los siguientes datos NO suele extraerse de forma rutinaria de cada estudio primario?",
+  opts:["Autor y año de publicación","Tamaño muestral y medidas de efecto","La opinión personal del revisor sobre la revista","Características de la población e intervención"],
+  correct:2,
+  fb:[
+    "Autor y año son datos básicos de identificación que siempre se extraen.",
+    "El tamaño muestral y las estimaciones de efecto son esenciales para la síntesis.",
+    "Correcto: la opinión subjetiva del revisor sobre la revista no es un dato extraíble del estudio.",
+    "Las características de población e intervención son centrales para describir y agrupar estudios."
+  ]
+},
+{
+  sec:"extraccion", lvl:"intermedio",
+  q:"Para meta-analizar un desenlace continuo cuando los estudios reportan medianas y rangos intercuartílicos en lugar de medias y DE, lo correcto es:",
+  opts:["Descartar esos estudios siempre","Estimar/convertir media y desviación estándar mediante métodos validados (p. ej., Wan, Luo)","Tratar la mediana como si fuera la media sin ajuste","Convertir todo a odds ratio"],
+  correct:1,
+  fb:[
+    "No es necesario descartarlos: existen métodos validados de conversión.",
+    "Correcto: se usan fórmulas validadas (Wan et al., Luo et al., Hozo) para estimar media y DE a partir de mediana y RIC/rango.",
+    "Usar la mediana como media sin ajuste introduce error, sobre todo en distribuciones asimétricas.",
+    "El OR es para datos dicotómicos; no aplica a desenlaces continuos."
+  ]
+},
+{
+  sec:"extraccion", lvl:"avanzado",
+  q:"La doble extracción de datos por revisores independientes tiene como principal ventaja:",
+  opts:["Acelerar el proceso","Detectar y corregir errores de transcripción y discrepancias","Eliminar la heterogeneidad estadística","Evitar el registro del protocolo"],
+  correct:1,
+  fb:[
+    "Suele ser más lenta, no más rápida; su valor es la calidad.",
+    "Correcto: la extracción duplicada reduce errores de transcripción y permite resolver discrepancias por consenso.",
+    "No modifica la heterogeneidad clínica/estadística entre estudios.",
+    "El registro del protocolo (p. ej., PROSPERO) es independiente y sigue siendo necesario."
+  ]
+},
+
+/* ===================== RIESGO DE SESGO ===================== */
+{
+  sec:"sesgo", lvl:"basico",
+  q:"Según las clases del Dr. Barboza, la escala de Newcastle-Ottawa (NOS) se aplica a:",
+  opts:["Ensayos clínicos aleatorizados","Estudios de cohorte y de casos y controles","Revisiones sistemáticas","Estudios de exactitud diagnóstica"],
+  correct:1,
+  fb:[
+    "Para RCTs se usa la herramienta RoB 2.0, no la NOS.",
+    "Correcto: la NOS fue desarrollada para evaluar la calidad de estudios no aleatorizados: cohortes y casos y controles.",
+    "Para evaluar revisiones sistemáticas se usa AMSTAR-2.",
+    "Para exactitud diagnóstica se usa QUADAS-2."
+  ],
+  src:"NEWCASTLE OTTAWA SCALE (diapositivas del curso)"
+},
+{
+  sec:"sesgo", lvl:"intermedio",
+  q:"En la escala NOS, ¿cuál es la puntuación máxima posible y qué dominios evalúa en una cohorte?",
+  opts:["10 estrellas: Aleatorización, Cegamiento, Seguimiento","9 estrellas: Selección, Comparabilidad y Desenlace (Outcome)","5 estrellas: Población, Intervención, Comparación","12 estrellas: Sesgo, Confusión, Reporte"],
+  correct:1,
+  fb:[
+    "La NOS no evalúa aleatorización ni cegamiento (eso es de RCTs) y su máximo no es 10.",
+    "Correcto: máximo 9 estrellas, repartidas en Selección, Comparabilidad y Desenlace (en casos y controles: Exposición).",
+    "5 estrellas y dominios PICO no corresponden a la NOS.",
+    "La NOS no llega a 12 estrellas ni usa esos dominios."
+  ],
+  why:"NOS: 3 categorías, máximo 9 estrellas; según el curso, >7 estrellas = bajo riesgo de sesgo.",
+  src:"NEWCASTLE OTTAWA SCALE (diapositivas del curso)"
+},
+{
+  sec:"sesgo", lvl:"intermedio",
+  q:"La herramienta RoB 2.0 de Cochrane está diseñada para evaluar el riesgo de sesgo en:",
+  opts:["Estudios de cohorte","Ensayos clínicos aleatorizados","Estudios de prevalencia","Revisiones narrativas"],
+  correct:1,
+  fb:[
+    "Para cohortes/no aleatorizados de intervención se usa ROBINS-I, no RoB 2.0.",
+    "Correcto: RoB 2.0 evalúa el riesgo de sesgo en ensayos aleatorizados (RCTs).",
+    "Para prevalencia se usan herramientas tipo JBI, no RoB 2.0.",
+    "Las revisiones narrativas no son el objeto de RoB 2.0."
+  ],
+  src:"S1 (videolaringoscopia) y S5 (sacubitrilo) usaron RoB 2.0 en RCTs"
+},
+{
+  sec:"sesgo", lvl:"avanzado",
+  q:"¿Cuál de los siguientes NO es uno de los 5 dominios de la herramienta RoB 2.0?",
+  opts:["Proceso de aleatorización","Desviaciones de la intervención prevista","Confusión por indicación","Medición del desenlace"],
+  correct:2,
+  fb:[
+    "Sí es un dominio: el proceso de aleatorización.",
+    "Sí es un dominio: desviaciones respecto de la intervención prevista.",
+    "Correcto: la 'confusión' es un dominio de ROBINS-I (no aleatorizados); en RCTs la aleatorización controla la confusión.",
+    "Sí es un dominio: la medición del desenlace."
+  ],
+  why:"Dominios RoB 2.0: aleatorización, desviaciones de la intervención, datos de desenlace faltantes, medición del desenlace y selección del resultado reportado."
+},
+{
+  sec:"sesgo", lvl:"intermedio",
+  q:"La herramienta QUADAS-2 se utiliza específicamente para evaluar:",
+  opts:["Riesgo de sesgo en estudios de exactitud diagnóstica","Calidad de meta-análisis en red","Heterogeneidad estadística","Sesgo de publicación"],
+  correct:0,
+  fb:[
+    "Correcto: QUADAS-2 evalúa el riesgo de sesgo en estudios de exactitud diagnóstica (4 dominios: selección de pacientes, prueba índice, estándar de referencia, flujo y tiempos).",
+    "Para network meta-analysis no se usa QUADAS-2.",
+    "La heterogeneidad se mide con I²/Q, no con QUADAS-2.",
+    "El sesgo de publicación se evalúa con funnel plot/Egger, no con QUADAS-2."
+  ],
+  src:"NEWCASTLE OTTAWA SCALE / QUADAS-2 (diapositivas del curso)"
+},
+{
+  sec:"sesgo", lvl:"avanzado",
+  q:"Para evaluar la calidad METODOLÓGICA de las revisiones sistemáticas incluidas en una umbrella review, la herramienta de elección es:",
+  opts:["RoB 2.0","AMSTAR-2","NOS","Escala de Jadad"],
+  correct:1,
+  fb:[
+    "RoB 2.0 evalúa RCTs individuales, no revisiones sistemáticas.",
+    "Correcto: AMSTAR-2 (A MeaSurement Tool to Assess systematic Reviews) valora la calidad de revisiones sistemáticas, clave en umbrella reviews.",
+    "La NOS evalúa estudios observacionales primarios.",
+    "Jadad evalúa la calidad de RCTs individuales (centrado en cegamiento/aleatorización)."
+  ],
+  src:"S6. Umbrella review de curcumina"
+},
+
+/* ===================== MEDIDAS DE EFECTO ===================== */
+{
+  sec:"efecto", lvl:"basico",
+  q:"¿Cuál de estas medidas de efecto tiene como valor nulo (sin efecto) el 1?",
+  opts:["Diferencia de medias (MD)","Riesgo relativo (RR) y odds ratio (OR)","Diferencia de medias estandarizada (SMD)","Diferencia de riesgos (RD)"],
+  correct:1,
+  fb:[
+    "La MD es una diferencia: su valor nulo es 0.",
+    "Correcto: RR, OR y HR son razones (cocientes); el valor nulo es 1.",
+    "La SMD es una diferencia estandarizada: su valor nulo es 0.",
+    "La diferencia de riesgos es una resta: su valor nulo es 0."
+  ],
+  why:"Razones (RR, OR, HR) → nulo = 1. Diferencias (MD, SMD, RD) → nulo = 0."
+},
+{
+  sec:"efecto", lvl:"intermedio",
+  q:"¿Cuándo es preferible usar la Diferencia de Medias Estandarizada (SMD) en lugar de la Diferencia de Medias (MD)?",
+  opts:["Cuando todos los estudios usan exactamente la misma escala","Cuando los estudios miden el mismo constructo con escalas/instrumentos diferentes","Cuando el desenlace es dicotómico","Cuando hay pocos estudios"],
+  correct:1,
+  fb:[
+    "Si la escala es idéntica, la MD es directamente interpretable y preferible.",
+    "Correcto: la SMD (p. ej., d de Cohen, g de Hedges) permite combinar estudios que miden el mismo concepto con distintos instrumentos.",
+    "Para desenlaces dicotómicos se usan RR/OR, no SMD.",
+    "El número de estudios no determina elegir SMD frente a MD."
+  ],
+  src:"EJEMPLO 3 (SSD) reportó SMD (depresión 1.80, ansiedad 1.55, alexitimia 1.39)"
+},
+{
+  sec:"efecto", lvl:"intermedio",
+  q:"En el meta-análisis de alopurinol y demencia, el OR combinado fue 0.91 (IC95% 0.87–0.95). ¿Cómo se interpreta?",
+  opts:["La exposición a alopurinol se asoció con MAYOR probabilidad de demencia","La exposición a alopurinol se asoció con MENOR probabilidad de demencia, y es estadísticamente significativo","No hubo asociación significativa","El resultado no es interpretable por el IC"],
+  correct:1,
+  fb:[
+    "Un OR<1 indica menor probabilidad, no mayor.",
+    "Correcto: OR 0.91 (<1) indica menor odds de demencia con alopurinol, y el IC95% no cruza 1, por lo que es significativo.",
+    "Sí es significativo: el intervalo 0.87–0.95 está completamente por debajo de 1.",
+    "El IC es estrecho y no cruza el nulo: es perfectamente interpretable."
+  ],
+  src:"EJEMPLO 2. Alopurinol y demencia (casos y controles)"
+},
+{
+  sec:"efecto", lvl:"avanzado",
+  q:"Una limitación conocida del Odds Ratio (OR) frente al Riesgo Relativo (RR) es que:",
+  opts:["El OR no puede calcularse en casos y controles","El OR sobreestima la magnitud del efecto cuando el desenlace es frecuente (>10%)","El OR siempre es menor que 1","El OR no tiene intervalo de confianza"],
+  correct:1,
+  fb:[
+    "Al contrario: el OR es la medida natural en estudios de casos y controles.",
+    "Correcto: cuando el desenlace es común, el OR se aleja de 1 más que el RR, exagerando la magnitud aparente del efecto.",
+    "El OR puede ser mayor o menor que 1 según la dirección del efecto.",
+    "El OR sí tiene intervalo de confianza, como toda estimación."
+  ]
+},
+
+/* ===================== MODELOS ===================== */
+{
+  sec:"modelos", lvl:"basico",
+  q:"¿Cuál es el supuesto central del modelo de efectos ALEATORIOS en meta-análisis?",
+  opts:["Existe un único efecto verdadero común a todos los estudios","Los efectos verdaderos varían entre estudios y siguen una distribución","Todos los estudios tienen el mismo tamaño muestral","No hay error de muestreo"],
+  correct:1,
+  fb:[
+    "Ese es el supuesto del modelo de efectos FIJOS, no aleatorios.",
+    "Correcto: el modelo de efectos aleatorios asume que los efectos verdaderos difieren entre estudios y se distribuyen alrededor de un efecto medio.",
+    "El modelo no asume igualdad de tamaños muestrales.",
+    "Siempre existe error de muestreo; ningún modelo lo elimina."
+  ]
+},
+{
+  sec:"modelos", lvl:"intermedio",
+  q:"En presencia de heterogeneidad sustancial entre estudios, ¿qué modelo es generalmente más apropiado?",
+  opts:["Efectos fijos, porque ignora la heterogeneidad","Efectos aleatorios, porque incorpora la varianza entre estudios (τ²)","Ninguno: no debe hacerse meta-análisis","Siempre efectos fijos por convención"],
+  correct:1,
+  fb:[
+    "Ignorar la heterogeneidad con efectos fijos produce IC demasiado estrechos y falsa precisión.",
+    "Correcto: con heterogeneidad sustancial, el modelo de efectos aleatorios incorpora τ² y ofrece IC más realistas.",
+    "Puede meta-analizarse si es clínicamente razonable; la heterogeneidad se modela, no necesariamente prohíbe la síntesis.",
+    "No es una convención automática: el modelo se elige según la heterogeneidad esperada."
+  ],
+  why:"Varios estudios de la carpeta (S1, S4, S5) usaron modelos de efectos aleatorios por la heterogeneidad esperada."
+},
+{
+  sec:"modelos", lvl:"avanzado",
+  q:"El método de DerSimonian-Laird es un método clásico para:",
+  opts:["Evaluar el riesgo de sesgo","Estimar la varianza entre estudios (τ²) en el modelo de efectos aleatorios","Calcular la sensibilidad y especificidad","Detectar duplicados"],
+  correct:1,
+  fb:[
+    "No evalúa riesgo de sesgo; es un estimador estadístico.",
+    "Correcto: DerSimonian-Laird estima τ² (varianza entre estudios) en el modelo de efectos aleatorios; existen alternativas como REML.",
+    "No se relaciona con métricas de exactitud diagnóstica.",
+    "No tiene que ver con la deduplicación de registros."
+  ]
+},
+{
+  sec:"modelos", lvl:"intermedio",
+  q:"En el modelo de efectos fijos del estudio de alopurinol y demencia, la heterogeneidad fue I² = 0%. ¿Qué justifica razonablemente usar efectos fijos aquí?",
+  opts:["La ausencia de heterogeneidad detectable entre los pocos estudios","El gran número de estudios incluidos","Que el desenlace era continuo","Que se buscó en una sola base de datos"],
+  correct:0,
+  fb:[
+    "Correcto: con I²=0% (sin heterogeneidad detectable) el modelo de efectos fijos es defendible.",
+    "Solo había 4 estudios; no es por gran número.",
+    "El desenlace era dicotómico (demencia sí/no), medido con OR.",
+    "El número de bases de datos no determina el modelo estadístico."
+  ],
+  src:"EJEMPLO 2. Alopurinol y demencia (I²=0%, efectos fijos)"
+},
+
+/* ===================== HETEROGENEIDAD ===================== */
+{
+  sec:"heterogeneidad", lvl:"basico",
+  q:"El estadístico I² expresa:",
+  opts:["El número de estudios incluidos","El porcentaje de la variabilidad total debida a heterogeneidad y no al azar","La magnitud del efecto combinado","El sesgo de publicación"],
+  correct:1,
+  fb:[
+    "El I² no cuenta estudios.",
+    "Correcto: I² es la proporción (%) de la variabilidad total atribuible a heterogeneidad entre estudios más que al error de muestreo.",
+    "El efecto combinado se expresa con RR/OR/MD, no con I².",
+    "El sesgo de publicación se valora con funnel plot/Egger, no con I²."
+  ]
+},
+{
+  sec:"heterogeneidad", lvl:"intermedio",
+  q:"Según la guía orientativa de Cochrane, un I² de 87% (como en el meta-análisis de videolaringoscopia) se interpreta como heterogeneidad:",
+  opts:["Baja (no importante)","Moderada","Considerable/alta","Nula"],
+  correct:2,
+  fb:[
+    "Un 87% está muy por encima del rango bajo.",
+    "El rango moderado suele situarse alrededor de 30–60%.",
+    "Correcto: valores ~75–100% indican heterogeneidad considerable/alta; 87% es alta.",
+    "Nula sería 0%; 87% es muy alta."
+  ],
+  why:"Guía aproximada Cochrane: 0–40% puede no ser importante; 30–60% moderada; 50–90% sustancial; 75–100% considerable.",
+  src:"S1. Videolaringoscopia (RR 1.12; I²=87%)"
+},
+{
+  sec:"heterogeneidad", lvl:"intermedio",
+  q:"Para explorar las FUENTES de heterogeneidad (p. ej., por qué difieren los efectos entre estudios), ¿qué técnica se utiliza?",
+  opts:["Trim-and-fill","Análisis de subgrupos y meta-regresión","Cálculo del NNT","Test de Egger"],
+  correct:1,
+  fb:[
+    "Trim-and-fill corrige sesgo de publicación, no explica heterogeneidad clínica.",
+    "Correcto: el análisis de subgrupos y la meta-regresión examinan covariables que podrían explicar la heterogeneidad.",
+    "El NNT traduce el efecto a términos clínicos; no explora heterogeneidad.",
+    "Egger evalúa asimetría del funnel/sesgo de publicación, no fuentes de heterogeneidad."
+  ],
+  src:"EJEMPLO 1 usó meta-regresión para evaluar fuentes de heterogeneidad"
+},
+{
+  sec:"heterogeneidad", lvl:"avanzado",
+  q:"Una limitación del test Q de Cochran (chi-cuadrado de heterogeneidad) es que:",
+  opts:["Siempre es significativo","Tiene baja potencia cuando hay pocos estudios y excesiva potencia con muchos","No depende del número de estudios","Mide el efecto combinado"],
+  correct:1,
+  fb:[
+    "No siempre es significativo; depende de los datos y del número de estudios.",
+    "Correcto: con pocos estudios el test Q tiene baja potencia (puede no detectar heterogeneidad real); con muchos, detecta diferencias triviales.",
+    "Sí depende del número de estudios, que afecta su potencia.",
+    "El test Q evalúa heterogeneidad, no la magnitud del efecto."
+  ]
+},
+{
+  sec:"heterogeneidad", lvl:"avanzado",
+  q:"El parámetro τ² (tau cuadrado) representa:",
+  opts:["La varianza DENTRO de cada estudio","La varianza ENTRE los efectos verdaderos de los estudios","El error tipo I","El intervalo de predicción"],
+  correct:1,
+  fb:[
+    "La varianza intraestudio corresponde al error de muestreo de cada estudio, no a τ².",
+    "Correcto: τ² estima la varianza entre los efectos verdaderos de los distintos estudios (heterogeneidad real).",
+    "El error tipo I (α) es la probabilidad de falso positivo, no τ².",
+    "El intervalo de predicción se deriva en parte de τ², pero no es τ² en sí."
+  ]
+},
+
+/* ===================== SESGO DE PUBLICACIÓN ===================== */
+{
+  sec:"publicacion", lvl:"basico",
+  q:"El funnel plot (gráfico en embudo) representa típicamente:",
+  opts:["El efecto de cada estudio frente a su precisión (o error estándar)","El I² frente al año de publicación","La sensibilidad frente a 1-especificidad","El número de citas por estudio"],
+  correct:0,
+  fb:[
+    "Correcto: el funnel plot grafica el tamaño del efecto (eje X) frente a la precisión/error estándar (eje Y).",
+    "No relaciona I² con el año; eso sería otro tipo de gráfico.",
+    "Sensibilidad vs 1-especificidad es la curva ROC, no un funnel plot.",
+    "El funnel plot no grafica citas."
+  ]
+},
+{
+  sec:"publicacion", lvl:"intermedio",
+  q:"La ASIMETRÍA de un funnel plot puede sugerir:",
+  opts:["Ausencia total de sesgo","Sesgo de publicación o efecto de estudios pequeños (small-study effects)","Que el modelo es de efectos fijos","Que el desenlace es continuo"],
+  correct:1,
+  fb:[
+    "La asimetría sugiere problemas; la simetría es la que apunta a ausencia de sesgo evidente.",
+    "Correcto: la asimetría puede indicar sesgo de publicación, aunque también heterogeneidad o efecto de estudios pequeños.",
+    "La forma del funnel no determina el tipo de modelo estadístico usado.",
+    "La asimetría no informa sobre si el desenlace es continuo o dicotómico."
+  ],
+  src:"EJEMPLO 1: la inspección visual del funnel reveló cierta asimetría"
+},
+{
+  sec:"publicacion", lvl:"intermedio",
+  q:"El test de Egger se utiliza para:",
+  opts:["Evaluar cuantitativamente la asimetría del funnel plot","Estimar la sensibilidad diagnóstica","Calcular el efecto combinado","Medir la concordancia entre revisores"],
+  correct:0,
+  fb:[
+    "Correcto: el test de Egger evalúa estadísticamente la asimetría del funnel plot (regresión sobre la precisión).",
+    "No se relaciona con métricas diagnósticas.",
+    "No calcula el efecto combinado, sino la asimetría.",
+    "La concordancia entre revisores se mide con kappa, no con Egger."
+  ],
+  src:"EJEMPLO 1 detectó sesgo de publicación con el test de Egger (P<0.05)"
+},
+{
+  sec:"publicacion", lvl:"avanzado",
+  q:"El método de 'trim-and-fill' de Duval y Tweedie sirve para:",
+  opts:["Eliminar estudios de baja calidad","Estimar e imputar los estudios potencialmente 'faltantes' y recalcular el efecto ajustado","Aumentar la heterogeneidad","Detectar duplicados en la búsqueda"],
+  correct:1,
+  fb:[
+    "No elimina estudios; imputa los que podrían faltar por sesgo de publicación.",
+    "Correcto: trim-and-fill estima cuántos estudios faltarían para hacer simétrico el funnel y recalcula un efecto ajustado.",
+    "No busca aumentar heterogeneidad; corrige asimetría por posible sesgo.",
+    "No tiene relación con la deduplicación de registros."
+  ],
+  src:"EJEMPLO 1: el trim-and-fill no alteró sustancialmente la estimación combinada"
+},
+{
+  sec:"publicacion", lvl:"avanzado",
+  q:"¿Cuál es el número mínimo de estudios habitualmente recomendado para evaluar de forma fiable el sesgo de publicación con funnel plot/Egger?",
+  opts:["Al menos 3","Al menos 10","Al menos 50","No hay recomendación"],
+  correct:1,
+  fb:[
+    "Con solo 3 estudios el funnel y el test de Egger carecen de potencia y son poco fiables.",
+    "Correcto: Cochrane recomienda al menos 10 estudios para interpretar el funnel plot y aplicar pruebas de asimetría.",
+    "No se exigen 50; el umbral práctico habitual es 10.",
+    "Sí existe recomendación: ≥10 estudios."
+  ]
+},
+
+/* ===================== FOREST PLOT ===================== */
+{
+  sec:"forest", lvl:"basico",
+  q:"En un forest plot, el rombo (diamante) del final representa:",
+  opts:["El estudio con mayor peso","El efecto combinado (estimación global) y su intervalo de confianza","El valor nulo","El sesgo de publicación"],
+  correct:1,
+  fb:[
+    "El estudio con mayor peso es un cuadrado grande, no el rombo.",
+    "Correcto: el rombo resume el efecto combinado; su centro es la estimación puntual y su ancho el IC95%.",
+    "El valor nulo es la línea vertical de referencia, no el rombo.",
+    "El sesgo de publicación se evalúa en el funnel plot, no en el rombo."
+  ]
+},
+{
+  sec:"forest", lvl:"basico",
+  q:"En un forest plot, el TAMAÑO del cuadrado de cada estudio es proporcional a:",
+  opts:["El valor p del estudio","El peso del estudio en el meta-análisis (generalmente inverso a su varianza)","El año de publicación","El factor de impacto de la revista"],
+  correct:1,
+  fb:[
+    "El cuadrado no representa el valor p.",
+    "Correcto: el área del cuadrado refleja el peso del estudio (estudios más precisos/grandes pesan más).",
+    "El tamaño no codifica el año de publicación.",
+    "El factor de impacto no interviene en el peso estadístico."
+  ]
+},
+{
+  sec:"forest", lvl:"intermedio",
+  q:"En un forest plot de razones (RR/OR) con la línea vertical del nulo en 1, un estudio cuyo intervalo de confianza CRUZA el 1 indica:",
+  opts:["Resultado estadísticamente significativo","Resultado NO estadísticamente significativo para ese estudio","Error en el gráfico","Heterogeneidad alta"],
+  correct:1,
+  fb:[
+    "Si cruza el nulo, no alcanza significancia estadística.",
+    "Correcto: si el IC cruza 1 (el nulo para razones), el efecto de ese estudio no es estadísticamente significativo.",
+    "No es un error: es una situación frecuente y esperable.",
+    "Cruzar el nulo no informa por sí mismo sobre la heterogeneidad global."
+  ]
+},
+{
+  sec:"forest", lvl:"intermedio",
+  q:"En el forest plot del meta-análisis de cordón umbilical (UCM vs ICC), la reducción de transfusiones fue RR 0.5 (IC95% 0.3–0.9), pero la mortalidad RR 0.5 (IC95% 0.2–1.1). ¿Qué diferencia hay en su interpretación?",
+  opts:["Ambos son significativos","La transfusión es significativa (IC no cruza 1); la mortalidad NO lo es (IC cruza 1)","La mortalidad es significativa y la transfusión no","Ninguno es interpretable"],
+  correct:1,
+  fb:[
+    "No ambos: el de mortalidad cruza el 1.",
+    "Correcto: 0.3–0.9 no incluye el 1 (significativo); 0.2–1.1 incluye el 1 (no significativo), pese a un punto estimado idéntico de 0.5.",
+    "Es al revés: la transfusión sí es significativa y la mortalidad no.",
+    "Ambos son interpretables a partir de su IC."
+  ],
+  why:"Un mismo punto estimado puede ser o no significativo según el ancho del IC (precisión).",
+  src:"S4. Umbilical cord milking"
+},
+{
+  sec:"forest", lvl:"avanzado",
+  q:"Un intervalo de confianza muy ANCHO alrededor del efecto de un estudio en el forest plot suele reflejar:",
+  opts:["Alta precisión y muestra grande","Baja precisión, habitualmente por muestra pequeña o pocos eventos","Ausencia de sesgo","Heterogeneidad nula"],
+  correct:1,
+  fb:[
+    "Un IC ancho es lo contrario de alta precisión.",
+    "Correcto: un IC ancho indica baja precisión, típicamente por tamaño muestral pequeño o escasos eventos.",
+    "El ancho del IC no informa directamente sobre sesgo.",
+    "El ancho del IC de un estudio no mide la heterogeneidad del conjunto."
+  ]
+},
+
+/* ===================== GRADE ===================== */
+{
+  sec:"grade", lvl:"basico",
+  q:"El sistema GRADE clasifica la CERTEZA (calidad) de la evidencia en cuántos niveles y cuáles?",
+  opts:["2: buena y mala","4: alta, moderada, baja y muy baja","3: A, B y C","5: de 1 a 5 estrellas"],
+  correct:1,
+  fb:[
+    "GRADE no usa una dicotomía buena/mala.",
+    "Correcto: GRADE define 4 niveles de certeza: alta, moderada, baja y muy baja.",
+    "No usa categorías A/B/C.",
+    "No usa un sistema de 1–5 estrellas."
+  ],
+  src:"S5 reportó certeza moderada/baja/muy baja con GRADE"
+},
+{
+  sec:"grade", lvl:"intermedio",
+  q:"En GRADE, ¿con qué nivel de certeza PARTEN los ensayos clínicos aleatorizados (RCTs) antes de ajustar?",
+  opts:["Baja","Alta","Muy baja","Moderada"],
+  correct:1,
+  fb:[
+    "Los estudios observacionales parten en baja, no los RCTs.",
+    "Correcto: los RCTs comienzan en certeza ALTA y pueden bajar por limitaciones.",
+    "Muy baja es el nivel más bajo posible tras múltiples descensos, no el de partida de un RCT.",
+    "Moderada no es el punto de partida de un RCT, sino un posible resultado tras un descenso."
+  ]
+},
+{
+  sec:"grade", lvl:"avanzado",
+  q:"¿Cuál de los siguientes NO es uno de los cinco dominios para BAJAR la certeza en GRADE?",
+  opts:["Riesgo de sesgo","Inconsistencia (heterogeneidad)","Gran magnitud del efecto","Imprecisión"],
+  correct:2,
+  fb:[
+    "El riesgo de sesgo sí es un dominio que baja la certeza.",
+    "La inconsistencia (heterogeneidad inexplicada) sí baja la certeza.",
+    "Correcto: una gran magnitud del efecto es un criterio para SUBIR la certeza (en observacionales), no para bajarla.",
+    "La imprecisión (IC amplios, pocos eventos) sí baja la certeza."
+  ],
+  why:"Bajan certeza: riesgo de sesgo, inconsistencia, evidencia indirecta, imprecisión y sesgo de publicación. Suben: gran efecto, gradiente dosis-respuesta, confusión que reforzaría el efecto."
+},
+{
+  sec:"grade", lvl:"intermedio",
+  q:"Cuando el meta-análisis de sacubitrilo/valsartán reporta 'certeza muy baja' para un desenlace, la interpretación correcta es:",
+  opts:["El efecto estimado es seguramente correcto","La confianza en que el efecto estimado sea cercano al real es muy limitada","No se debe publicar el resultado","El resultado es estadísticamente significativo"],
+  correct:1,
+  fb:[
+    "Certeza muy baja implica gran incertidumbre, no seguridad.",
+    "Correcto: 'muy baja' significa que el efecto verdadero podría ser sustancialmente distinto del estimado.",
+    "La baja certeza no impide publicar; se reporta con la salvedad correspondiente.",
+    "Certeza y significancia estadística son conceptos distintos; baja certeza no equivale a significancia."
+  ],
+  src:"S5. Sacubitrilo/valsartán (certeza muy baja en eGFR e hiperkalemia)"
+},
+
+/* ===================== TIPOS DE REVISIONES ===================== */
+{
+  sec:"tipos", lvl:"basico",
+  q:"Una 'umbrella review' (revisión paraguas) sintetiza:",
+  opts:["Estudios primarios individuales","Revisiones sistemáticas y meta-análisis ya publicados","Solo ensayos clínicos","Series de casos"],
+  correct:1,
+  fb:[
+    "Los estudios primarios son la unidad de una revisión sistemática convencional, no de una umbrella.",
+    "Correcto: la umbrella review es una revisión de revisiones sistemáticas/meta-análisis existentes.",
+    "No se limita a RCTs; integra revisiones que pueden incluir distintos diseños.",
+    "Las series de casos no son su unidad de análisis."
+  ],
+  src:"S6. Umbrella review de curcumina (26 RS/MA incluidas)"
+},
+{
+  sec:"tipos", lvl:"avanzado",
+  q:"En la umbrella review de curcumina, el 'corrected covered area' (CCA) fue 9.76%, indicando solapamiento moderado. ¿Qué mide el CCA?",
+  opts:["La heterogeneidad estadística","El grado de SOLAPAMIENTO de estudios primarios compartidos entre las revisiones incluidas","La certeza GRADE","El sesgo de publicación"],
+  correct:1,
+  fb:[
+    "El CCA no es una medida de heterogeneidad estadística.",
+    "Correcto: el CCA cuantifica cuánto se solapan (comparten estudios primarios) las revisiones incluidas en la umbrella review.",
+    "No corresponde a la certeza GRADE.",
+    "No evalúa sesgo de publicación."
+  ],
+  why:"CCA: <5% solapamiento leve; 5–10% moderado; 11–15% alto; >15% muy alto.",
+  src:"S6. Umbrella review (CCA 9.76%, solapamiento moderado)"
+},
+{
+  sec:"tipos", lvl:"intermedio",
+  q:"¿Cuál es la diferencia clave entre una revisión sistemática y un meta-análisis?",
+  opts:["Son lo mismo","La revisión sistemática es el método de síntesis estructurada; el meta-análisis es la combinación estadística de resultados","El meta-análisis no requiere búsqueda sistemática","La revisión sistemática siempre incluye meta-análisis"],
+  correct:1,
+  fb:[
+    "No son lo mismo: una puede existir sin la otra.",
+    "Correcto: toda revisión sistemática sigue un método estructurado; el meta-análisis es el paso estadístico opcional de combinar datos.",
+    "El meta-análisis válido se apoya en una búsqueda sistemática previa.",
+    "No siempre: si los estudios son demasiado heterogéneos, la revisión puede ser solo narrativa (p. ej., S3, mpox)."
+  ],
+  src:"S3 (mpox) es revisión sistemática SIN meta-análisis combinado de efecto"
+},
+{
+  sec:"tipos", lvl:"intermedio",
+  q:"Una revisión de alcance (scoping review) se diferencia de una revisión sistemática clásica porque:",
+  opts:["Siempre incluye meta-análisis","Busca mapear la extensión y naturaleza de la evidencia, sin necesariamente evaluar efecto ni calidad","Solo incluye RCTs","No requiere búsqueda estructurada"],
+  correct:1,
+  fb:[
+    "Las scoping reviews habitualmente NO realizan meta-análisis.",
+    "Correcto: la scoping review mapea qué evidencia existe y sus características, sin centrarse en estimar un efecto combinado.",
+    "No se limita a RCTs; suele abarcar diseños diversos.",
+    "Sí requiere una búsqueda estructurada y reproducible (PRISMA-ScR)."
+  ]
+},
+
+/* ===================== CASOS REALES ===================== */
+{
+  sec:"casos", lvl:"intermedio",
+  q:"El meta-análisis de insomnio y depresión incluyó 34 cohortes (172,077 participantes) con RR combinado 2.27 (IC95% 1.89–2.71). ¿Qué se concluye?",
+  opts:["El insomnio reduce el riesgo de depresión","El insomnio se asocia con un riesgo ~2.3 veces mayor de depresión, de forma significativa","No hay asociación","El IC indica no significancia"],
+  correct:1,
+  fb:[
+    "Un RR>1 indica aumento del riesgo, no reducción.",
+    "Correcto: RR 2.27 implica un riesgo ~2.3 veces mayor; el IC (1.89–2.71) no cruza 1, por lo que es significativo.",
+    "Sí hay asociación: el efecto es claro y significativo.",
+    "El IC está por encima de 1, lo que confirma significancia."
+  ],
+  src:"EJEMPLO 1. Insomnio y depresión"
+},
+{
+  sec:"casos", lvl:"avanzado",
+  q:"En el meta-análisis de insomnio-depresión, I² = 92.6% y el test de Egger fue significativo (P<0.05). ¿Qué dos problemas señalan estos hallazgos?",
+  opts:["Alta heterogeneidad y posible sesgo de publicación","Bajo poder y error de tipo II","Confusión y error de medición","Ninguno relevante"],
+  correct:0,
+  fb:[
+    "Correcto: I²=92.6% indica heterogeneidad muy alta y un Egger significativo sugiere posible sesgo de publicación (que el trim-and-fill exploró).",
+    "El poder estadístico no es lo que reflejan I² y Egger.",
+    "Confusión y error de medición son sesgos de los estudios primarios, no lo que miden I² ni Egger.",
+    "Ambos hallazgos son muy relevantes para interpretar la robustez del resultado."
+  ],
+  src:"EJEMPLO 1. Insomnio y depresión"
+},
+{
+  sec:"casos", lvl:"intermedio",
+  q:"El meta-análisis de videolaringoscopia (S1) usó PRISMA-2020, RoB 2.0 y GRADE, e incluyó 15 RCTs (4582 intubaciones), con éxito al primer intento RR 1.12 (IC95% 1.04–1.21). ¿Qué muestra este resultado?",
+  opts:["La videolaringoscopia no cambia el éxito al primer intento","La videolaringoscopia mejora significativamente el éxito al primer intento (IC no cruza 1)","El resultado no es significativo","La laringoscopia directa es superior"],
+  correct:1,
+  fb:[
+    "El RR 1.12 con IC que no cruza 1 sí indica mejora.",
+    "Correcto: RR 1.12 (1.04–1.21) indica mayor probabilidad de éxito al primer intento con videolaringoscopia, de forma significativa.",
+    "Es significativo: el IC 1.04–1.21 excluye el 1.",
+    "El resultado favorece a la videolaringoscopia, no a la directa."
+  ],
+  src:"S1. Videolaringoscopia vs laringoscopia directa"
+},
+{
+  sec:"casos", lvl:"avanzado",
+  q:"En el estudio de mpox (S3) no se realizó un meta-análisis combinado de efecto, sino una síntesis de proporciones (p. ej., 91.85% de muestras positivas de lesiones cutáneas). La razón más probable es:",
+  opts:["Falta de tiempo de los autores","La naturaleza de la pregunta (descriptiva, de proporciones a partir de reportes de casos) no se presta a combinar un efecto comparativo","Que no había suficientes estudios","Que estaba prohibido por la revista"],
+  correct:1,
+  fb:[
+    "No es una cuestión de tiempo, sino de diseño y tipo de pregunta.",
+    "Correcto: al ser una síntesis descriptiva de proporciones a partir de reportes/series de casos sin comparador, se resume con proporciones, no con un efecto combinado tipo RR/OR.",
+    "Se incluyeron 65 estudios; el número no era el limitante.",
+    "No hay prohibición editorial; es una decisión metodológica acorde a la pregunta."
+  ],
+  src:"S3. Detección de mpox (revisión de proporciones)"
+}
+];
+
+/* ============================================================
+   MÓDULO DE ELEGIBILIDAD (CRIBADO TIAB)
+   Cada escenario:
+   - Paso 1: el usuario CONSTRUYE los criterios (multi-selección)
+   - Paso 2: el usuario CRIBA artículos en formato TIAB (Título + Abstract)
+   ============================================================ */
+
+const SCREENING = [
+  {
+    id:"insomnio",
+    title:"Insomnio y riesgo de depresión (meta-análisis de cohortes prospectivas)",
+    based:"Basado en EJEMPLO 1 (Li et al., BMC Psychiatry 2016)",
+    objective:"Evaluar la asociación entre el insomnio (exposición) y el riesgo de depresión incidente (desenlace) en adultos sin depresión al inicio.",
+    picos:{
+      P:"Adultos sin depresión al inicio del estudio",
+      E:"Insomnio (dificultad para iniciar/mantener el sueño)",
+      C:"Sin insomnio",
+      O:"Depresión incidente (nueva)",
+      S:"Estudios de cohorte PROSPECTIVOS"
+    },
+    criteria:{
+      prompt:"Marca TODOS los criterios que deberían ser de INCLUSIÓN para esta revisión (los no marcados se tratarán como exclusión).",
+      options:[
+        { text:"Estudios de cohorte prospectivos", include:true,
+          fb:"INCLUSIÓN correcta: el diseño prospectivo permite establecer temporalidad (el insomnio precede a la depresión)." },
+        { text:"Participantes SIN depresión al inicio (basal)", include:true,
+          fb:"INCLUSIÓN correcta: garantiza medir depresión incidente y preservar la secuencia exposición→desenlace." },
+        { text:"El insomnio se evalúa como exposición y la depresión como desenlace", include:true,
+          fb:"INCLUSIÓN correcta: es la dirección causal de interés de la pregunta PECO." },
+        { text:"Estudios con diseño retrospectivo", include:false,
+          fb:"EXCLUSIÓN correcta: los retrospectivos no garantizan adecuadamente la temporalidad; se excluyeron en el estudio original." },
+        { text:"Resúmenes de congreso, cartas o comentarios sin datos completos", include:false,
+          fb:"EXCLUSIÓN correcta: no aportan datos suficientes para la extracción ni la síntesis." },
+        { text:"Estudios donde insomnio y depresión actúan ambos como exposición (p. ej., predecir ansiedad)", include:false,
+          fb:"EXCLUSIÓN correcta: no responde a la pregunta insomnio→depresión." }
+      ]
+    },
+    articles:[
+      {
+        title:"Insomnia symptoms and incident depression: a 10-year prospective cohort of 12,000 depression-free adults",
+        abstract:"En una cohorte prospectiva de 12,000 adultos sin antecedente de depresión al inicio, se evaluó si los síntomas de insomnio basal predecían depresión incidente tras 10 años de seguimiento. Se reportó un hazard ratio ajustado.",
+        decision:"include",
+        reason:"Cohorte PROSPECTIVA, participantes SIN depresión basal, insomnio como exposición y depresión incidente como desenlace. Cumple todos los criterios."
+      },
+      {
+        title:"Depression at baseline and subsequent risk of insomnia: a longitudinal analysis",
+        abstract:"Estudio que parte de pacientes CON depresión al inicio y evalúa cómo la depresión basal predice la aparición posterior de insomnio.",
+        decision:"exclude",
+        reason:"Dirección invertida: aquí la depresión es la exposición y el insomnio el desenlace; además los participantes tienen depresión basal. No cumple."
+      },
+      {
+        title:"Cross-sectional association between poor sleep and depressive symptoms in a national survey",
+        abstract:"Encuesta TRANSVERSAL que mide simultáneamente sueño y síntomas depresivos en un mismo punto temporal.",
+        decision:"exclude",
+        reason:"Diseño transversal (no prospectivo): no permite establecer temporalidad. Se excluye según el criterio de diseño."
+      },
+      {
+        title:"Insomnia and risk of depression: a retrospective case-control study using medical records",
+        abstract:"Estudio RETROSPECTIVO de casos y controles que compara antecedentes de insomnio entre personas con y sin depresión a partir de historias clínicas.",
+        decision:"exclude",
+        reason:"Diseño retrospectivo de casos y controles; el protocolo excluye los retrospectivos por riesgo de sesgo de temporalidad/recuerdo."
+      },
+      {
+        title:"Prospective cohort of older adults: baseline insomnia predicts incident major depression over 5 years",
+        abstract:"Cohorte prospectiva de adultos mayores sin depresión al inicio; el insomnio basal se asoció con depresión mayor incidente a 5 años (riesgo relativo ajustado reportado).",
+        decision:"include",
+        reason:"Cohorte prospectiva, sin depresión basal, insomnio→depresión incidente. Cumple todos los criterios."
+      },
+      {
+        title:"Conference abstract: insomnia and mood disorders (poster, sin datos completos)",
+        abstract:"Resumen de congreso que menciona una asociación entre insomnio y trastornos del ánimo, sin reportar tamaños de efecto, IC ni metodología completa.",
+        decision:"exclude",
+        reason:"Resumen de congreso sin datos completos: criterio de exclusión por falta de información para extracción."
+      }
+    ]
+  },
+
+  {
+    id:"videolaringo",
+    title:"Videolaringoscopia vs laringoscopia directa en adultos críticos (meta-análisis de RCTs)",
+    based:"Basado en S1 (Polo, Barboza et al., J Clin Med 2025)",
+    objective:"Comparar la eficacia y seguridad de la videolaringoscopia (VL) frente a la laringoscopia directa (DL) para intubación traqueal en adultos en estado crítico.",
+    picos:{
+      P:"Adultos en estado crítico que requieren intubación traqueal",
+      I:"Videolaringoscopia (VL)",
+      C:"Laringoscopia directa (DL)",
+      O:"Éxito al primer intento (primario); tiempo, visualización glótica, complicaciones",
+      S:"Ensayos clínicos aleatorizados (RCTs)"
+    },
+    criteria:{
+      prompt:"Marca TODOS los criterios que deberían ser de INCLUSIÓN para esta revisión de RCTs.",
+      options:[
+        { text:"Ensayos clínicos aleatorizados (RCTs)", include:true,
+          fb:"INCLUSIÓN correcta: la pregunta de eficacia comparada de intervenciones se responde mejor con RCTs." },
+        { text:"Población de adultos en estado crítico", include:true,
+          fb:"INCLUSIÓN correcta: es la población diana definida en el PICO." },
+        { text:"Comparación directa de VL frente a DL", include:true,
+          fb:"INCLUSIÓN correcta: la intervención frente al comparador definido." },
+        { text:"Estudios observacionales (cohortes, casos y controles)", include:false,
+          fb:"EXCLUSIÓN correcta: el diseño elegido fueron RCTs; los observacionales quedan fuera de esta pregunta." },
+        { text:"Estudios en población exclusivamente pediátrica", include:false,
+          fb:"EXCLUSIÓN correcta: la población diana son adultos críticos, no niños." },
+        { text:"Estudios en quirófano electivo de pacientes no críticos", include:false,
+          fb:"EXCLUSIÓN correcta: el escenario es el paciente crítico, no la cirugía electiva en pacientes estables." }
+      ]
+    },
+    articles:[
+      {
+        title:"Randomized controlled trial of videolaryngoscopy versus direct laryngoscopy for emergency intubation in critically ill adults",
+        abstract:"RCT multicéntrico en adultos críticos que requerían intubación urgente. Se aleatorizó a VL o DL y se midió el éxito al primer intento, el tiempo de intubación y las complicaciones.",
+        decision:"include",
+        reason:"RCT, adultos críticos, VL vs DL, desenlace éxito al primer intento. Cumple todos los criterios."
+      },
+      {
+        title:"Observational cohort comparing videolaryngoscopy and direct laryngoscopy in the ICU",
+        abstract:"Estudio de COHORTE observacional (no aleatorizado) que compara ambas técnicas en pacientes de UCI según la elección del clínico.",
+        decision:"exclude",
+        reason:"Diseño observacional, no RCT. Se excluye por el criterio de diseño."
+      },
+      {
+        title:"Videolaryngoscopy vs direct laryngoscopy in elective surgery in healthy adults: a randomized trial",
+        abstract:"RCT en pacientes adultos SANOS sometidos a cirugía ELECTIVA programada, sin criterios de enfermedad crítica.",
+        decision:"exclude",
+        reason:"Aunque es un RCT y compara VL vs DL, la población NO es de pacientes críticos. Se excluye por población."
+      },
+      {
+        title:"Pediatric RCT: videolaryngoscopy versus direct laryngoscopy in children under 5 years",
+        abstract:"RCT en NIÑOS menores de 5 años que comparó VL y DL para intubación.",
+        decision:"exclude",
+        reason:"Población pediátrica; la revisión se centra en adultos críticos. Se excluye por población."
+      },
+      {
+        title:"Multicenter randomized trial of first-attempt intubation success with videolaryngoscopy in critically ill adults in the emergency department",
+        abstract:"RCT en servicios de urgencias con adultos en estado crítico; desenlace primario éxito al primer intento comparando VL y DL.",
+        decision:"include",
+        reason:"RCT, adultos críticos, VL vs DL, desenlace primario relevante. Cumple todos los criterios."
+      },
+      {
+        title:"Narrative review of airway management devices in critical care",
+        abstract:"Revisión NARRATIVA (no un estudio primario) que discute distintos dispositivos de manejo de vía aérea sin datos aleatorizados propios.",
+        decision:"exclude",
+        reason:"Es una revisión narrativa, no un estudio primario aleatorizado. Se excluye por tipo de publicación/diseño."
+      }
+    ]
+  }
+];
+
+/* Exponer datos globalmente para app.js */
+window.TRIVIA_DATA = { SECTIONS, QUESTIONS, SCREENING };
+
+/* ============================================================
+   PREGUNTAS COMPLEMENTARIAS (se añaden al banco principal)
+   ============================================================ */
+(function(){
+  const EXTRA = [
+  /* ---- PICO ---- */
+  {
+    sec:"pico", lvl:"basico",
+    q:"En una pregunta de tipo PECO (estudios observacionales), la «E» representa:",
+    opts:["Efecto","Exposición","Especificidad","Error estándar"],
+    correct:1,
+    fb:[
+      "El efecto es el resultado de la asociación, no la «E» del marco.",
+      "Correcto: en PECO, la «E» es la Exposición (sustituye a la Intervención de PICO).",
+      "La especificidad es una métrica diagnóstica, no un componente de PECO.",
+      "El error estándar es una medida de precisión, no parte del marco PECO."
+    ],
+    why:"Para estudios observacionales se usa PECO: Población, Exposición, Comparador, Outcome."
+  },
+  {
+    sec:"pico", lvl:"avanzado",
+    q:"Para el meta-análisis de factores psicológicos en el trastorno de síntomas somáticos (EJEMPLO 3), la pregunta comparaba pacientes con SSD frente a controles sanos. ¿Qué componente PICO representa 'controles sanos'?",
+    opts:["Población (P)","Intervención (I)","Comparador (C)","Desenlace (O)"],
+    correct:2,
+    fb:[
+      "La población son los pacientes con SSD; los sanos son el grupo de comparación.",
+      "No hay una intervención: es un estudio de asociación, no experimental.",
+      "Correcto: los controles sanos son el comparador frente al cual se contrastan los factores psicológicos.",
+      "El desenlace es la diferencia en factores psicológicos (p. ej., SMD de depresión), no el grupo control."
+    ],
+    src:"EJEMPLO 3. Factores psicológicos en SSD"
+  },
+  /* ---- ELEGIBILIDAD ---- */
+  {
+    sec:"elegibilidad", lvl:"intermedio",
+    q:"En la revisión de cordón umbilical (UCM), se incluyeron RCTs que comparaban UCM frente a pinzamiento inmediato (ICC), pinzamiento tardío (DCC) o ninguna intervención. Esto ilustra que el COMPARADOR puede:",
+    opts:["Ser solo placebo","Incluir varios comparadores definidos a priori","No definirse nunca","Ser siempre el mismo fármaco"],
+    correct:1,
+    fb:[
+      "El comparador no tiene que ser placebo; aquí son técnicas de pinzamiento.",
+      "Correcto: se pueden definir varios comparadores a priori (ICC, DCC, ninguno), y analizarlos estratificadamente.",
+      "El comparador siempre se define en los criterios de elegibilidad.",
+      "El comparador puede variar; aquí son intervenciones obstétricas, no un fármaco."
+    ],
+    src:"S4. Umbilical cord milking (UCM vs ICC/DCC)"
+  },
+  {
+    sec:"elegibilidad", lvl:"avanzado",
+    q:"Definir la 'ventana temporal' de búsqueda (p. ej., estudios publicados después de 2009) como criterio de elegibilidad es válido cuando:",
+    opts:["Nunca, siempre sesga","Hay una justificación conceptual (p. ej., un cambio de definición diagnóstica o de criterios)","Solo si reduce el número de estudios","Solo en meta-análisis en red"],
+    correct:1,
+    fb:[
+      "No siempre sesga: puede estar justificado metodológicamente.",
+      "Correcto: en EJEMPLO 3 se incluyeron estudios posteriores a 2009 por el cambio de criterios diagnósticos (DSM-5/ICD-11). La restricción temporal justificada es válida.",
+      "Reducir el número de estudios no es una justificación válida por sí misma.",
+      "No es exclusivo del network meta-analysis."
+    ],
+    src:"EJEMPLO 3 (estudios después de 2009 por cambio de criterios diagnósticos)"
+  },
+  /* ---- BÚSQUEDA ---- */
+  {
+    sec:"busqueda", lvl:"avanzado",
+    q:"El registro prospectivo del protocolo de una revisión sistemática (p. ej., en PROSPERO) sirve principalmente para:",
+    opts:["Acelerar la publicación","Reducir el sesgo de reporte y la duplicación de revisiones, aumentando la transparencia","Garantizar significancia","Evitar la evaluación por pares"],
+    correct:1,
+    fb:[
+      "No acelera necesariamente la publicación.",
+      "Correcto: el registro a priori reduce el sesgo de reporte de resultados, evita duplicaciones y aumenta la transparencia.",
+      "No tiene relación con la significancia estadística.",
+      "No reemplaza ni evita la revisión por pares."
+    ]
+  },
+  {
+    sec:"busqueda", lvl:"basico",
+    q:"La literatura gris (gray literature) incluye:",
+    opts:["Solo artículos retractados","Tesis, informes, actas de congresos y registros de ensayos no publicados convencionalmente","Únicamente artículos en inglés","Editoriales de revistas de alto impacto"],
+    correct:1,
+    fb:[
+      "La literatura gris no se refiere a retractaciones.",
+      "Correcto: abarca tesis, informes técnicos, actas, registros de ensayos y otros documentos no publicados por las vías editoriales habituales.",
+      "No se define por idioma.",
+      "Las editoriales publicadas no son literatura gris."
+    ],
+    why:"Buscar literatura gris ayuda a mitigar el sesgo de publicación."
+  },
+  /* ---- SELECCIÓN ---- */
+  {
+    sec:"seleccion", lvl:"avanzado",
+    q:"El índice kappa de Cohen, usado en el cribado, mide:",
+    opts:["La magnitud del efecto","La concordancia entre revisores más allá del azar","La heterogeneidad estadística","El sesgo de publicación"],
+    correct:1,
+    fb:[
+      "No mide la magnitud del efecto del meta-análisis.",
+      "Correcto: kappa cuantifica el acuerdo entre dos revisores corrigiendo por el acuerdo esperado por azar.",
+      "La heterogeneidad se mide con I²/Q, no con kappa.",
+      "El sesgo de publicación se evalúa con funnel/Egger."
+    ]
+  },
+  {
+    sec:"seleccion", lvl:"basico",
+    q:"Cuando se identifican publicaciones DUPLICADAS del mismo estudio con distintos tamaños muestrales, la recomendación habitual es:",
+    opts:["Incluir todas como estudios independientes","Conservar el reporte con el mayor número de participantes/datos más completos","Eliminar el estudio por completo","Promediar los resultados"],
+    correct:1,
+    fb:[
+      "Incluirlas todas duplicaría datos y daría peso excesivo a un mismo estudio.",
+      "Correcto: se conserva la publicación con la muestra más grande o los datos más completos, evitando doble conteo.",
+      "No se elimina el estudio válido; solo se evita la duplicación.",
+      "No se promedian publicaciones del mismo estudio."
+    ],
+    src:"EJEMPLO 1 conservó el resultado con mayor número de individuos ante duplicados"
+  },
+  /* ---- EXTRACCIÓN ---- */
+  {
+    sec:"extraccion", lvl:"intermedio",
+    q:"Para combinar resultados de un mismo estudio que reporta varios subgrupos como si fueran estudios separados, hay que tener cuidado con:",
+    opts:["Nada, siempre es correcto","El problema de la doble inclusión / unidad de análisis (dar peso excesivo a un mismo estudio)","La conversión de medianas","El idioma de publicación"],
+    correct:1,
+    fb:[
+      "No siempre es correcto; puede violar la independencia de los datos.",
+      "Correcto: tratar subgrupos del mismo estudio como independientes infla su peso (problema de unidad de análisis).",
+      "No es un problema de conversión de medianas.",
+      "El idioma no es la cuestión aquí."
+    ]
+  },
+  /* ---- RIESGO DE SESGO ---- */
+  {
+    sec:"sesgo", lvl:"intermedio",
+    q:"La herramienta ROBINS-I está diseñada para evaluar el riesgo de sesgo en:",
+    opts:["RCTs","Estudios no aleatorizados de intervenciones","Revisiones sistemáticas","Estudios de prevalencia"],
+    correct:1,
+    fb:[
+      "Para RCTs se usa RoB 2.0.",
+      "Correcto: ROBINS-I (Risk Of Bias In Non-randomized Studies of Interventions) evalúa estudios no aleatorizados de intervención.",
+      "Para revisiones se usa AMSTAR-2.",
+      "Para prevalencia se usan herramientas JBI específicas."
+    ],
+    why:"ROBINS-I incluye un dominio de confusión, ausente en RoB 2.0."
+  },
+  {
+    sec:"sesgo", lvl:"avanzado",
+    q:"En la escala NOS, el dominio de 'Comparabilidad' se relaciona principalmente con:",
+    opts:["El cegamiento del paciente","El control de factores de confusión (ajuste por covariables)","La aleatorización","El tamaño del efecto"],
+    correct:1,
+    fb:[
+      "El cegamiento es propio de los RCTs, no del dominio de comparabilidad de la NOS.",
+      "Correcto: la 'Comparabilidad' premia el control de confusión (p. ej., ajuste o emparejamiento por factores relevantes).",
+      "La NOS evalúa estudios observacionales; no hay aleatorización que valorar.",
+      "El tamaño del efecto no es lo que evalúa este dominio de calidad."
+    ],
+    src:"NEWCASTLE OTTAWA SCALE (Selección, Comparabilidad, Desenlace/Exposición)"
+  },
+  {
+    sec:"sesgo", lvl:"basico",
+    q:"El cegamiento (blinding) de pacientes y evaluadores en un RCT busca reducir principalmente:",
+    opts:["El sesgo de confusión","El sesgo de desempeño y de detección","El sesgo de publicación","La heterogeneidad"],
+    correct:1,
+    fb:[
+      "La confusión se controla con la aleatorización, no con el cegamiento.",
+      "Correcto: el cegamiento reduce el sesgo de desempeño (comportamiento diferencial) y de detección (medición diferencial del desenlace).",
+      "El sesgo de publicación es un fenómeno a nivel de la literatura, no del cegamiento dentro de un estudio.",
+      "El cegamiento no modifica la heterogeneidad entre estudios."
+    ]
+  },
+  /* ---- MEDIDAS DE EFECTO ---- */
+  {
+    sec:"efecto", lvl:"intermedio",
+    q:"Un Hazard Ratio (HR) se utiliza típicamente cuando el desenlace es:",
+    opts:["Una proporción única","El TIEMPO hasta que ocurre un evento (análisis de supervivencia)","Una media continua","Una correlación"],
+    correct:1,
+    fb:[
+      "Una proporción simple se analiza con RR/OR, no con HR.",
+      "Correcto: el HR proviene de modelos de supervivencia (p. ej., Cox) y compara la tasa instantánea del evento a lo largo del tiempo.",
+      "Una media continua se compara con MD/SMD.",
+      "La correlación se mide con r, no con HR."
+    ]
+  },
+  {
+    sec:"efecto", lvl:"avanzado",
+    q:"El Número Necesario a Tratar (NNT) se interpreta como:",
+    opts:["El número de estudios necesarios para el meta-análisis","El número de pacientes que deben tratarse para evitar un evento adverso adicional","El error estándar del efecto","La heterogeneidad residual"],
+    correct:1,
+    fb:[
+      "No se refiere al número de estudios.",
+      "Correcto: el NNT es el inverso de la reducción absoluta del riesgo; indica cuántos pacientes tratar para prevenir un evento.",
+      "No es una medida de precisión como el error estándar.",
+      "No mide heterogeneidad."
+    ]
+  },
+  {
+    sec:"efecto", lvl:"basico",
+    q:"En el estudio de sacubitrilo/valsartán, la duplicación de creatinina sérica fue RR 0.77 (IC95% 0.72–0.83). Esto significa que el riesgo de duplicar la creatinina:",
+    opts:["Aumentó un 77%","Se redujo aproximadamente un 23% frente al comparador","No cambió","Se redujo un 77%"],
+    correct:1,
+    fb:[
+      "Un RR de 0.77 no implica aumento.",
+      "Correcto: RR 0.77 ≈ reducción relativa del 23% (1 − 0.77) del riesgo de duplicar la creatinina.",
+      "Sí cambió: el IC no cruza 1, es significativo.",
+      "La reducción es del 23%, no del 77%; el RR no es la reducción directa."
+    ],
+    src:"S5. Sacubitrilo/valsartán (RR 0.77, certeza moderada)"
+  },
+  /* ---- MODELOS ---- */
+  {
+    sec:"modelos", lvl:"avanzado",
+    q:"El método de Mantel-Haenszel se emplea frecuentemente en meta-análisis de:",
+    opts:["Datos continuos con SMD","Datos dicotómicos (RR/OR), especialmente con eventos poco frecuentes","Análisis de supervivencia exclusivamente","Estudios de prevalencia"],
+    correct:1,
+    fb:[
+      "Para datos continuos se usan métodos de varianza inversa, no Mantel-Haenszel.",
+      "Correcto: Mantel-Haenszel es robusto para combinar datos dicotómicos (RR/OR), útil con eventos escasos.",
+      "No es exclusivo de supervivencia.",
+      "No es el método estándar para prevalencias."
+    ]
+  },
+  {
+    sec:"modelos", lvl:"intermedio",
+    q:"En meta-análisis, ponderar cada estudio por el inverso de su varianza implica que:",
+    opts:["Todos los estudios pesan igual","Los estudios más precisos (mayor n, menor varianza) reciben mayor peso","Los estudios más antiguos pesan más","El peso depende del factor de impacto"],
+    correct:1,
+    fb:[
+      "No pesan igual: ese sería un promedio simple, que no se usa.",
+      "Correcto: la ponderación por varianza inversa da más peso a los estudios más precisos.",
+      "La antigüedad no determina el peso estadístico.",
+      "El factor de impacto no interviene en el peso."
+    ]
+  },
+  /* ---- HETEROGENEIDAD ---- */
+  {
+    sec:"heterogeneidad", lvl:"avanzado",
+    q:"El INTERVALO DE PREDICCIÓN en un meta-análisis de efectos aleatorios informa sobre:",
+    opts:["El rango donde probablemente caerá el efecto verdadero de un nuevo estudio futuro","El número de estudios","El sesgo de publicación","La sensibilidad diagnóstica"],
+    correct:0,
+    fb:[
+      "Correcto: el intervalo de predicción estima el rango plausible del efecto en un escenario/estudio futuro, incorporando la heterogeneidad (τ²).",
+      "No cuenta estudios.",
+      "No evalúa sesgo de publicación.",
+      "No se relaciona con métricas diagnósticas."
+    ],
+    why:"A diferencia del IC del efecto medio, el intervalo de predicción refleja la dispersión de los efectos verdaderos."
+  },
+  {
+    sec:"heterogeneidad", lvl:"basico",
+    q:"La heterogeneidad CLÍNICA se refiere a diferencias entre estudios en:",
+    opts:["El método estadístico usado","Población, intervención, comparador o desenlaces (variabilidad real entre estudios)","El tipo de gráfico","El número de bases de datos"],
+    correct:1,
+    fb:[
+      "El método estadístico es una decisión analítica, no heterogeneidad clínica.",
+      "Correcto: la heterogeneidad clínica surge de diferencias en participantes, intervenciones, comparadores, desenlaces o contextos.",
+      "El tipo de gráfico no genera heterogeneidad.",
+      "El número de bases de datos no es una fuente de heterogeneidad clínica."
+    ]
+  },
+  /* ---- PUBLICACIÓN ---- */
+  {
+    sec:"publicacion", lvl:"basico",
+    q:"El sesgo de publicación ocurre porque:",
+    opts:["Los estudios con resultados positivos/significativos tienden a publicarse más que los negativos","Las revistas publican al azar","Los meta-análisis inventan estudios","Los autores nunca registran protocolos"],
+    correct:0,
+    fb:[
+      "Correcto: los estudios con resultados estadísticamente significativos o 'positivos' se publican más, distorsionando la evidencia disponible.",
+      "La publicación no es aleatoria; precisamente está sesgada hacia lo positivo.",
+      "Los meta-análisis no inventan estudios.",
+      "El registro de protocolos es una buena práctica, no la causa del sesgo."
+    ]
+  },
+  {
+    sec:"publicacion", lvl:"avanzado",
+    q:"Una asimetría del funnel plot NO siempre se debe a sesgo de publicación. Otra causa posible es:",
+    opts:["Heterogeneidad real o efecto de estudios pequeños de baja calidad","Que el efecto es exactamente nulo","Que se usó efectos aleatorios","Que hay demasiados estudios grandes"],
+    correct:0,
+    fb:[
+      "Correcto: la asimetría puede reflejar heterogeneidad genuina, diferencias de calidad o 'small-study effects', no solo sesgo de publicación.",
+      "Un efecto nulo no explica por sí mismo la asimetría.",
+      "El modelo estadístico elegido no causa la asimetría del gráfico.",
+      "El exceso de estudios grandes tendería a simetría, no asimetría."
+    ]
+  },
+  /* ---- FOREST ---- */
+  {
+    sec:"forest", lvl:"intermedio",
+    q:"En un forest plot de diferencias de medias (MD/SMD), la línea vertical del nulo se ubica en:",
+    opts:["1","0","0.5","Depende del número de estudios"],
+    correct:1,
+    fb:[
+      "El 1 es el nulo para razones (RR/OR/HR), no para diferencias.",
+      "Correcto: para diferencias (MD/SMD/RD) el valor nulo es 0.",
+      "No es 0.5.",
+      "El nulo no depende del número de estudios."
+    ]
+  },
+  {
+    sec:"forest", lvl:"avanzado",
+    q:"Si en un forest plot el rombo (efecto combinado) queda completamente a la izquierda de la línea del nulo y NO la toca, se concluye que:",
+    opts:["El efecto combinado no es significativo","Hay un efecto combinado estadísticamente significativo en esa dirección","El meta-análisis está mal hecho","Hay sesgo de publicación seguro"],
+    correct:1,
+    fb:[
+      "Si no toca el nulo, sí es significativo.",
+      "Correcto: un rombo que no cruza la línea del nulo indica un efecto combinado estadísticamente significativo en la dirección donde se ubica.",
+      "No implica error de método.",
+      "La posición del rombo no demuestra sesgo de publicación."
+    ]
+  },
+  /* ---- GRADE ---- */
+  {
+    sec:"grade", lvl:"avanzado",
+    q:"En GRADE, los estudios OBSERVACIONALES (p. ej., cohortes) parten en certeza baja, pero pueden SUBIR de nivel por:",
+    opts:["Tener muchos autores","Una magnitud de efecto grande, gradiente dosis-respuesta o confusión que reforzaría el efecto","Estar en inglés","Usar efectos fijos"],
+    correct:1,
+    fb:[
+      "El número de autores no influye en la certeza.",
+      "Correcto: GRADE permite subir la certeza de observacionales ante efecto grande, gradiente dosis-respuesta o confusión plausible que iría en contra del efecto observado.",
+      "El idioma no afecta la certeza GRADE.",
+      "El modelo estadístico no es un criterio para subir certeza."
+    ]
+  },
+  {
+    sec:"grade", lvl:"basico",
+    q:"La 'imprecisión' como motivo para bajar la certeza en GRADE se relaciona típicamente con:",
+    opts:["Intervalos de confianza amplios y/o pocos eventos","Demasiados estudios","Alta calidad metodológica","Resultados muy consistentes"],
+    correct:0,
+    fb:[
+      "Correcto: IC amplios, tamaño muestral pequeño o escasos eventos generan imprecisión.",
+      "Muchos estudios suelen aumentar la precisión, no disminuirla.",
+      "La alta calidad no es motivo para bajar la certeza.",
+      "La consistencia es lo opuesto a la inconsistencia; no baja la certeza."
+    ]
+  },
+  /* ---- TIPOS ---- */
+  {
+    sec:"tipos", lvl:"avanzado",
+    q:"Un meta-análisis en RED (network meta-analysis) permite:",
+    opts:["Solo comparaciones directas","Comparar múltiples intervenciones combinando evidencia directa e indirecta","Evitar la evaluación del riesgo de sesgo","Prescindir de la búsqueda sistemática"],
+    correct:1,
+    fb:[
+      "No se limita a comparaciones directas; esa es su principal ventaja.",
+      "Correcto: el NMA integra evidencia directa e indirecta para comparar y jerarquizar varias intervenciones simultáneamente.",
+      "Sigue requiriendo evaluación del riesgo de sesgo.",
+      "Requiere una búsqueda sistemática rigurosa, como toda revisión."
+    ],
+    why:"El supuesto clave del NMA es la transitividad/coherencia entre comparaciones."
+  },
+  {
+    sec:"tipos", lvl:"intermedio",
+    q:"Una revisión de exactitud diagnóstica (como la lógica detrás de QUADAS-2) combina típicamente:",
+    opts:["Riesgos relativos","Sensibilidad y especificidad (a menudo mediante modelos bivariados/HSROC)","Diferencias de medias","Hazard ratios"],
+    correct:1,
+    fb:[
+      "Los RR son para estudios de intervención/asociación, no de exactitud diagnóstica.",
+      "Correcto: las revisiones diagnósticas sintetizan sensibilidad y especificidad, frecuentemente con modelos bivariados o curvas HSROC.",
+      "Las MD son para desenlaces continuos.",
+      "Los HR son para tiempo-a-evento."
+    ]
+  },
+  {
+    sec:"tipos", lvl:"basico",
+    q:"Una revisión NARRATIVA tradicional se diferencia de una revisión sistemática en que:",
+    opts:["La narrativa sigue métodos explícitos y reproducibles","La narrativa no necesariamente usa una búsqueda exhaustiva ni criterios explícitos y reproducibles","Ambas son idénticas","La sistemática nunca evalúa sesgos"],
+    correct:1,
+    fb:[
+      "La narrativa suele carecer de métodos explícitos; eso caracteriza a la sistemática.",
+      "Correcto: la revisión narrativa puede ser selectiva y no reproducible; la sistemática define métodos explícitos a priori.",
+      "No son idénticas.",
+      "La sistemática sí evalúa el riesgo de sesgo."
+    ]
+  },
+  /* ---- CASOS ---- */
+  {
+    sec:"casos", lvl:"intermedio",
+    q:"En la umbrella review de curcumina (S6), la curcumina redujo LDL-c y triglicéridos alcanzando la 'diferencia mínima clínicamente importante' (MCID), pero la reducción de colesterol total NO. ¿Qué enseña esto?",
+    opts:["Significancia estadística = relevancia clínica siempre","Un efecto puede ser estadísticamente significativo sin alcanzar relevancia clínica (MCID)","El MCID es lo mismo que el valor p","La curcumina no tuvo ningún efecto"],
+    correct:1,
+    fb:[
+      "No siempre coinciden: ese es justamente el punto.",
+      "Correcto: un resultado puede ser estadísticamente significativo y aun así no alcanzar el umbral de importancia clínica (MCID).",
+      "El MCID es un umbral clínico, distinto del valor p estadístico.",
+      "Sí tuvo efectos significativos en varios lípidos; el matiz es la relevancia clínica."
+    ],
+    src:"S6. Umbrella review de curcumina (MCID en LDL-c y TG)"
+  },
+  {
+    sec:"casos", lvl:"avanzado",
+    q:"El estudio de alopurinol y demencia (EJEMPLO 2) concluyó cautelosamente pese a un OR significativo (0.91; IC 0.87–0.95). El principal motivo de cautela fue:",
+    opts:["El I² era altísimo","Solo se incluyeron 4 estudios de casos y controles y el análisis de sensibilidad perdió significancia","El OR era mayor que 1","No se evaluó el riesgo de sesgo"],
+    correct:1,
+    fb:[
+      "El I² fue 0%, no alto.",
+      "Correcto: con solo 4 estudios y un análisis de sensibilidad que perdió significancia, no se podían sacar conclusiones firmes pese al OR significativo.",
+      "El OR era menor que 1 (protector aparente).",
+      "Sí se evaluó el riesgo de sesgo con la NOS."
+    ],
+    src:"EJEMPLO 2. Alopurinol y demencia"
+  },
+  {
+    sec:"casos", lvl:"intermedio",
+    q:"En el meta-análisis de cordón umbilical (S4), la UCM mejoró desenlaces INTERMEDIOS (hemoglobina, presión arterial) pero no los desenlaces clínicos duros (mortalidad, IVH). La conclusión razonable es:",
+    opts:["La UCM debe ser el estándar de cuidado","Los beneficios en marcadores intermedios no se tradujeron en mejoría de desenlaces clínicos importantes","La UCM es perjudicial","No se puede concluir nada"],
+    correct:1,
+    fb:[
+      "Los autores precisamente NO la recomiendan como estándar.",
+      "Correcto: mejoraron variables intermedias, pero sin impacto demostrado en mortalidad o IVH; por eso no se recomienda como estándar.",
+      "No se demostró daño.",
+      "Sí se concluye: distinción entre desenlaces intermedios y clínicos."
+    ],
+    src:"S4. Umbilical cord milking"
+  }
+  ];
+  window.TRIVIA_DATA.QUESTIONS.push.apply(window.TRIVIA_DATA.QUESTIONS, EXTRA);
+})();
+
+/* ============================================================
+   Trivia RS/MA — UI con pestañas (archivo único autocontenido)
+   ============================================================ */
+(function(){
+  "use strict";
+  const { SECTIONS, QUESTIONS, SCREENING } = window.TRIVIA_DATA;
+  const LETTERS = ["A","B","C","D","E","F"];
+  const LV = {basico:"Básico",intermedio:"Intermedio",avanzado:"Avanzado"};
+  const el=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e;};
+  const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+  // color + descripción por sección
+  const META = {
+    pico:{c:"#0a6e8a",d:"Cómo formular la pregunta de investigación y sus componentes (PICO, PECO, CoCoPop)."},
+    elegibilidad:{c:"#1c8c5b",d:"Criterios de inclusión y exclusión que deciden qué estudios entran a la revisión."},
+    busqueda:{c:"#2563b0",d:"Bases de datos, términos MeSH, operadores booleanos, literatura gris y registro del protocolo."},
+    seleccion:{c:"#7b53c4",d:"Cribado de estudios, eliminación de duplicados y el diagrama de flujo PRISMA."},
+    extraccion:{c:"#0f8a8a",d:"Qué datos se extraen de cada estudio y cómo manejar medianas, subgrupos y errores."},
+    sesgo:{c:"#c0612b",d:"Herramientas de riesgo de sesgo: RoB 2.0, ROBINS-I, Newcastle-Ottawa, QUADAS-2, AMSTAR-2."},
+    efecto:{c:"#b8434e",d:"Medidas de efecto: RR, OR, HR, MD, SMD, NNT y su interpretación."},
+    modelos:{c:"#2b7a78",d:"Modelos de efectos fijos vs aleatorios y métodos de ponderación."},
+    heterogeneidad:{c:"#b9770e",d:"I², Q de Cochran, τ², subgrupos, meta-regresión e intervalo de predicción."},
+    publicacion:{c:"#6a5acd",d:"Funnel plot, test de Egger y trim-and-fill para el sesgo de publicación."},
+    forest:{c:"#2e8b57",d:"Cómo leer un forest plot: cuadrados, líneas, rombo y la línea del nulo."},
+    grade:{c:"#c0392b",d:"Certeza de la evidencia con GRADE: niveles y motivos para subir o bajar."},
+    tipos:{c:"#1f6f8b",d:"Umbrella, scoping, diagnóstica, network meta-analysis y revisión narrativa."},
+    casos:{c:"#8a5a2b",d:"Preguntas integradoras basadas en resultados de estudios reales de RS/MA."}
+  };
+
+  // ilustraciones SVG por sección (usan el color de la sección)
+  const ILLUS = {
+    forest:()=>`<div class="sec-illus"><svg viewBox="0 0 460 150" role="img" aria-label="Forest plot">
+      <line x1="230" y1="10" x2="230" y2="120" stroke="#9fb3c2" stroke-dasharray="4 4"/>
+      <line x1="40" y1="130" x2="440" y2="130" stroke="#cdd9e3"/>
+      <g stroke="var(--sec)" stroke-width="2">
+        <line x1="150" y1="28" x2="250" y2="28"/><rect x="193" y="22" width="12" height="12" fill="var(--sec)" stroke="none"/>
+        <line x1="180" y1="52" x2="300" y2="52"/><rect x="232" y="45" width="16" height="16" fill="var(--sec)" stroke="none"/>
+        <line x1="120" y1="76" x2="240" y2="76"/><rect x="172" y="70" width="12" height="12" fill="var(--sec)" stroke="none"/>
+        <line x1="205" y1="98" x2="330" y2="98"/><rect x="258" y="92" width="14" height="14" fill="var(--sec)" stroke="none"/>
+      </g>
+      <polygon points="210,130 270,122 330,130 270,138" fill="var(--sec)" opacity="0.9"/>
+      <text x="40" y="146" font-size="10" fill="#7a8b99">Favorece intervención ◄ ► Favorece control</text>
+    </svg><div class="cap">Forest plot: cuadrados = estudios (tamaño = peso); rombo = efecto combinado; línea punteada = nulo.</div></div>`,
+    publicacion:()=>`<div class="sec-illus"><svg viewBox="0 0 420 170" role="img" aria-label="Funnel plot">
+      <line x1="210" y1="14" x2="90" y2="150" stroke="#cdd9e3"/>
+      <line x1="210" y1="14" x2="330" y2="150" stroke="#cdd9e3"/>
+      <line x1="210" y1="14" x2="210" y2="150" stroke="#9fb3c2" stroke-dasharray="4 4"/>
+      <g fill="var(--sec)">
+        <circle cx="205" cy="34" r="4"/><circle cx="222" cy="34" r="4"/>
+        <circle cx="188" cy="64" r="4"/><circle cx="236" cy="64" r="4"/><circle cx="214" cy="64" r="4"/>
+        <circle cx="170" cy="96" r="4"/><circle cx="250" cy="96" r="4"/><circle cx="206" cy="96" r="4"/>
+        <circle cx="150" cy="128" r="4"/><circle cx="268" cy="128" r="4"/><circle cx="196" cy="128" r="4"/>
+      </g>
+      <text x="150" y="166" font-size="10" fill="#7a8b99">Tamaño del efecto →</text>
+      <text x="6" y="90" font-size="10" fill="#7a8b99" transform="rotate(-90 12,90)">Precisión →</text>
+    </svg><div class="cap">Funnel plot: simetría sugiere ausencia de sesgo; la asimetría puede indicar sesgo de publicación.</div></div>`,
+    seleccion:()=>`<div class="sec-illus"><svg viewBox="0 0 460 168" role="img" aria-label="Flujo PRISMA">
+      <g fill="color-mix(in srgb,var(--sec) 12%,#fff)" stroke="var(--sec)" stroke-width="1.5">
+        <rect x="120" y="8" width="220" height="30" rx="7"/>
+        <rect x="120" y="52" width="220" height="30" rx="7"/>
+        <rect x="120" y="96" width="220" height="30" rx="7"/>
+        <rect x="120" y="138" width="220" height="26" rx="7"/>
+      </g>
+      <g fill="var(--sec)" font-size="11" text-anchor="middle">
+        <text x="230" y="27">Identificación (registros recuperados)</text>
+        <text x="230" y="71">Cribado (título / resumen)</text>
+        <text x="230" y="115">Elegibilidad (texto completo)</text>
+        <text x="230" y="155">Incluidos</text>
+      </g>
+      <g stroke="var(--sec)" stroke-width="1.5" marker-end="url(#ar)">
+        <line x1="230" y1="38" x2="230" y2="50"/><line x1="230" y1="82" x2="230" y2="94"/><line x1="230" y1="126" x2="230" y2="136"/>
+      </g>
+      <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="var(--sec)"/></marker></defs>
+    </svg><div class="cap">Diagrama de flujo PRISMA: las cuatro fases de la selección de estudios.</div></div>`,
+    heterogeneidad:()=>`<div class="sec-illus"><svg viewBox="0 0 420 130" role="img" aria-label="Heterogeneidad">
+      <line x1="30" y1="115" x2="400" y2="115" stroke="#cdd9e3"/>
+      <g stroke="var(--sec)" stroke-width="2" fill="none">
+        <path d="M30,90 C100,30 160,100 230,55 S360,40 400,80"/>
+      </g>
+      <g fill="var(--sec)"><circle cx="30" cy="90" r="4"/><circle cx="130" cy="62" r="4"/><circle cx="230" cy="55" r="4"/><circle cx="320" cy="58" r="4"/><circle cx="400" cy="80" r="4"/></g>
+      <text x="150" y="20" font-size="12" fill="var(--sec)" font-weight="700">I² · τ² · Q de Cochran</text>
+    </svg><div class="cap">La heterogeneidad mide cuánto varían los efectos verdaderos entre estudios.</div></div>`
+  };
+
+  const root=document.documentElement;
+  const tabsEl=document.getElementById("tabs");
+  const panel=document.getElementById("panel");
+  let activeTab=null;
+
+  function count(secId){return QUESTIONS.filter(q=>q.sec===secId).length;}
+  function setSecColor(c){root.style.setProperty("--sec",c||"#0a6e8a");}
+
+  /* ---------- TABS ---------- */
+  function buildTabs(){
+    tabsEl.innerHTML="";
+    addTab("home","🏠","Inicio","#0a6e8a");
+    SECTIONS.forEach(s=>addTab(s.id,s.icon,s.name.replace(/\s*\(.*\)/,""),META[s.id].c));
+    addTab("tiab","🧪","Elegibilidad TIAB","#0a6e8a");
+  }
+  function addTab(id,icon,name,color){
+    const t=el("button","tab");
+    t.dataset.id=id;
+    t.innerHTML=`<span class="ic">${icon}</span><span>${name}</span>`;
+    t.onclick=()=>openTab(id);
+    tabsEl.appendChild(t);
+  }
+  function openTab(id){
+    activeTab=id;
+    Array.prototype.forEach.call(tabsEl.children,t=>{
+      const on=t.dataset.id===id;
+      t.classList.toggle("on",on);
+      if(on){
+        const col = id==="home"||id==="tiab" ? "#0a6e8a" : META[id].c;
+        t.style.background=col; setSecColor(col);
+        t.scrollIntoView({block:"nearest",inline:"center",behavior:"smooth"});
+      } else { t.style.background="#fff"; }
+    });
+    if(id==="home") renderHome();
+    else if(id==="tiab") renderTiabList();
+    else renderSectionIntro(id);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  /* ---------- HOME ---------- */
+  function renderHome(){
+    let h=`<div class="card">
+      <h2 style="margin:.1em 0 .4em">Bienvenido a tu autoevaluación</h2>
+      <p class="lead">Cada <b>pestaña</b> de arriba es una etapa del método de una revisión sistemática y meta-análisis, y contiene su propia trivia con preguntas <b>aleatorias</b>, opción múltiple y <b>fundamento de cada respuesta</b>. Elige una sección para empezar, o entra al módulo de <b>Elegibilidad y cribado TIAB</b>.</p>
+      <div class="home-grid">`;
+    SECTIONS.forEach(s=>{
+      const m=META[s.id];
+      h+=`<div class="home-card" data-go="${s.id}">
+        <span class="stripe" style="background:${m.c}"></span>
+        <span class="hc-n">${count(s.id)} preg.</span>
+        <div class="hc-ic" style="background:${m.c}">${s.icon}</div>
+        <h3>${s.name.replace(/\s*\(.*\)/,"")}</h3>
+        <p>${m.d}</p>
+      </div>`;
+    });
+    h+=`<div class="home-card" data-go="tiab">
+        <span class="stripe" style="background:#0a6e8a"></span>
+        <div class="hc-ic" style="background:#0a6e8a">🧪</div>
+        <h3>Elegibilidad y cribado TIAB</h3>
+        <p>Define criterios de elegibilidad y criba artículos en formato título-resumen con feedback.</p>
+      </div>`;
+    h+=`</div></div>`;
+    panel.innerHTML=h;
+    panel.querySelectorAll("[data-go]").forEach(c=>c.onclick=()=>openTab(c.dataset.go));
+  }
+
+  /* ---------- SECTION INTRO + QUIZ ---------- */
+  let levelSel = {};
+  function renderSectionIntro(secId){
+    const sec=SECTIONS.find(s=>s.id===secId), m=META[secId];
+    setSecColor(m.c);
+    if(!levelSel[secId]) levelSel[secId]=new Set(["basico","intermedio","avanzado"]);
+    const illus = ILLUS[secId] ? ILLUS[secId]() : "";
+    let h=`<div class="sec-hero">
+        <div class="emoji">${sec.icon}</div>
+        <div><h2>${sec.name}</h2><p class="desc">${m.d}</p></div>
+      </div>
+      <div class="card">
+        ${illus}
+        <h3 style="margin:.1em 0 .3em">Elige el nivel y comienza</h3>
+        <p class="muted">Las preguntas se mezclan al azar. Al responder verás por qué cada opción es correcta o incorrecta.</p>
+        <div class="chips" id="lvls"></div>
+        <div class="row" style="margin-top:16px">
+          <span class="muted"><b id="avail">0</b> preguntas en esta sección con el nivel elegido</span>
+          <button class="btn" id="start">Comenzar trivia ▸</button>
+        </div>
+      </div>
+      <div id="quizarea"></div>`;
+    panel.innerHTML=h;
+    const lvls=panel.querySelector("#lvls");
+    ["basico","intermedio","avanzado"].forEach(l=>{
+      const c=el("button","chip"+(levelSel[secId].has(l)?" on":""),LV[l]);
+      c.onclick=()=>{ levelSel[secId].has(l)?levelSel[secId].delete(l):levelSel[secId].add(l); c.classList.toggle("on"); upd(); };
+      lvls.appendChild(c);
+    });
+    function poolN(){return QUESTIONS.filter(q=>q.sec===secId&&levelSel[secId].has(q.lvl)).length;}
+    function upd(){const n=poolN();panel.querySelector("#avail").textContent=n;panel.querySelector("#start").disabled=n===0;}
+    upd();
+    panel.querySelector("#start").onclick=()=>startQuiz(secId);
+  }
+
+  // estado del quiz
+  let quiz=[],qi=0,answers=[];
+  function startQuiz(secId){
+    const pool=QUESTIONS.filter(q=>q.sec===secId&&levelSel[secId].has(q.lvl));
+    quiz=shuffle(pool).map(q=>{
+      const order=shuffle(q.opts.map((_,i)=>i));
+      return {base:q,opts:order.map(i=>q.opts[i]),fb:order.map(i=>q.fb[i]),correct:order.indexOf(q.correct)};
+    });
+    qi=0;answers=new Array(quiz.length).fill(null);
+    renderQ();
+    panel.querySelector("#quizarea").scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function renderQ(){
+    const item=quiz[qi],q=item.base,sec=SECTIONS.find(s=>s.id===q.sec);
+    const answered=answers[qi]!==null;
+    let opts="";
+    item.opts.forEach((txt,i)=>{
+      let cls="opt";
+      if(answered){cls+=" disabled";if(i===item.correct)cls+=" correct";else if(i===answers[qi])cls+=" wrong";else cls+=" dim";}
+      opts+=`<div class="${cls}" data-i="${i}"><span class="key">${LETTERS[i]}</span><span>${txt}</span></div>`;
+    });
+    const last=qi===quiz.length-1;
+    panel.querySelector("#quizarea").innerHTML=`<div class="card">
+      <div class="progress"><i style="width:${qi/quiz.length*100}%"></i></div>
+      <div class="qmeta">
+        <span class="tag count">Pregunta ${qi+1} / ${quiz.length}</span>
+        <span class="tag sec">${sec.icon} ${sec.name.replace(/\s*\(.*\)/,"")}</span>
+        <span class="tag ${q.lvl}">${LV[q.lvl]}</span>
+      </div>
+      <div class="qtext">${q.q}</div>
+      <div class="opts" id="opts">${opts}</div>
+      <div class="fb" id="fb"></div>
+      <div class="navrow">
+        <button class="btn ghost sm" id="prev" ${qi===0?"disabled":""}>‹ Anterior</button>
+        <button class="btn sm" id="next" ${answered?"":"disabled"}>${last?"Ver resultados ▸":"Siguiente ▸"}</button>
+      </div>
+    </div>`;
+    if(!answered){
+      panel.querySelectorAll("#opts .opt").forEach(o=>o.onclick=()=>{answers[qi]=+o.dataset.i;renderQ();});
+    } else showFeedback();
+    panel.querySelector("#prev").onclick=()=>{if(qi>0){qi--;renderQ();}};
+    panel.querySelector("#next").onclick=()=>{ if(last) finish(); else {qi++;renderQ();} };
+  }
+  function showFeedback(){
+    const item=quiz[qi],q=item.base,chosen=answers[qi],ok=chosen===item.correct;
+    const fb=panel.querySelector("#fb");
+    fb.className="fb show "+(ok?"good":"bad");
+    let html=`<h4>${ok?"✅ ¡Correcto!":"❌ Incorrecto"}</h4>`;
+    if(!ok){
+      html+=`<div><b>Tu respuesta (${LETTERS[chosen]}):</b> ${item.fb[chosen]}</div>`;
+      html+=`<div style="margin-top:8px"><b>Respuesta correcta (${LETTERS[item.correct]}):</b> ${item.fb[item.correct]}</div>`;
+    }else html+=`<div>${item.fb[item.correct]}</div>`;
+    if(q.why)html+=`<div class="why"><b>💡 Para aprender:</b> ${q.why}</div>`;
+    if(q.src)html+=`<div class="src">Referencia: ${q.src}</div>`;
+    fb.innerHTML=html;
+  }
+  function finish(){
+    let ok=0;quiz.forEach((it,i)=>{if(answers[i]===it.correct)ok++;});
+    const total=quiz.length,pct=Math.round(ok/total*100);
+    const C=2*Math.PI*54, off=C*(1-pct/100);
+    let msg;
+    if(pct>=90)msg="¡Excelente! Dominio sólido de esta etapa.";
+    else if(pct>=70)msg="Muy bien. Revisa los puntos fallados para afinar.";
+    else if(pct>=50)msg="Buen avance; repasa los fundamentos marcados.";
+    else msg="Sigue practicando: lee con calma el fundamento de cada respuesta.";
+    panel.querySelector("#quizarea").innerHTML=`<div class="card">
+      <div class="scorebox">
+        <svg class="ring" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--line)" stroke-width="11"/>
+          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--sec)" stroke-width="11" stroke-linecap="round"
+            stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 60 60)"/>
+          <text x="60" y="58" text-anchor="middle" font-size="26" font-weight="800" fill="var(--ink)">${pct}%</text>
+          <text x="60" y="78" text-anchor="middle" font-size="13" fill="#5d7284">${ok}/${total}</text>
+        </svg>
+        <p class="score-msg">${msg}</p>
+      </div>
+      <div class="navrow" style="justify-content:center;margin-top:10px">
+        <button class="btn ghost sm" id="sreview">Revisar respuestas</button>
+        <button class="btn sm" id="sretry">↺ Repetir sección</button>
+        <button class="btn ghost sm" id="shome">🏠 Inicio</button>
+      </div>
+    </div>`;
+    panel.querySelector("#sreview").onclick=()=>{qi=0;renderQ();};
+    panel.querySelector("#sretry").onclick=()=>startQuiz(activeTab);
+    panel.querySelector("#shome").onclick=()=>openTab("home");
+  }
+
+  /* ---------- TIAB ---------- */
+  function renderTiabList(){
+    setSecColor("#0a6e8a");
+    let h=`<div class="card">
+      <h2 style="margin:.1em 0 .3em">🧪 Elegibilidad y cribado de artículos (TIAB)</h2>
+      <p class="lead">Elige un escenario. Primero <b>definirás los criterios de elegibilidad</b> a partir del PICO(S); luego <b>cribarás artículos en formato título-resumen (TIAB)</b> decidiendo si los incluyes o excluyes, con feedback inmediato.</p>
+      <div class="scn-pick" id="scns"></div>
+    </div>`;
+    panel.innerHTML=h;
+    const cont=panel.querySelector("#scns");
+    SCREENING.forEach(s=>{
+      const c=el("div","scn-card");
+      c.innerHTML=`<h3>${s.title}</h3><div class="based">${s.based}</div><p style="margin:.5em 0 0;font-size:.9rem;color:#33424f">${s.objective}</p>`;
+      c.onclick=()=>openScn(s.id);
+      cont.appendChild(c);
+    });
+  }
+  let curScn=null,critChecked=[];
+  function openScn(id){
+    curScn=SCREENING.find(s=>s.id===id);
+    critChecked=new Array(curScn.criteria.options.length).fill(false);
+    const labels={P:"Población",E:"Exposición",I:"Intervención",C:"Comparador",O:"Desenlace",S:"Diseño"};
+    let picos="";Object.keys(curScn.picos).forEach(k=>picos+=`<div class="p"><b>${labels[k]||k}</b>${curScn.picos[k]}</div>`);
+    panel.innerHTML=`
+    <div class="card">
+      <button class="btn ghost sm" id="back">‹ Otros escenarios</button>
+      <h2 style="margin:14px 0 .2em">${curScn.title}</h2>
+      <p class="muted">${curScn.based}</p>
+      <p class="lead">${curScn.objective}</p>
+      <div class="picos">${picos}</div>
+    </div>
+    <div class="card">
+      <h3 style="margin:.1em 0 .3em">Paso 1 · Define los criterios de elegibilidad</h3>
+      <p class="lead">${curScn.criteria.prompt}</p>
+      <div class="crit" id="crit"></div>
+      <button class="btn accent" id="ccheck">Comprobar mis criterios</button>
+      <div id="cres" style="margin-top:14px"></div>
+      <div id="cnext" class="hidden" style="margin-top:14px"><button class="btn" id="goscreen">Continuar al cribado ▸</button></div>
+    </div>
+    <div class="card hidden" id="sstep">
+      <h3 style="margin:.1em 0 .3em">Paso 2 · Criba los artículos (TIAB)</h3>
+      <p class="lead">Lee el <b>título y el resumen</b> y decide si lo INCLUIRÍAS o lo EXCLUIRÍAS según los criterios.</p>
+      <div id="tiabs"></div>
+      <div id="ssum" class="hidden" style="margin-top:10px"></div>
+    </div>`;
+    panel.querySelector("#back").onclick=()=>renderTiabList();
+    const cl=panel.querySelector("#crit");
+    curScn.criteria.options.forEach((o,i)=>{
+      const lab=el("label");
+      lab.innerHTML=`<input type="checkbox"><span><span>${o.text}</span><span class="cfb hidden"></span></span>`;
+      lab.querySelector("input").onchange=e=>critChecked[i]=e.target.checked;
+      cl.appendChild(lab);
+    });
+    panel.querySelector("#ccheck").onclick=checkCriteria;
+    panel.querySelector("#goscreen").onclick=()=>{panel.querySelector("#sstep").classList.remove("hidden");renderTiabCards();panel.querySelector("#sstep").scrollIntoView({behavior:"smooth"});};
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  function checkCriteria(){
+    let correct=0;const opts=curScn.criteria.options;
+    panel.querySelectorAll("#crit label").forEach((lab,i)=>{
+      const o=opts[i],right=critChecked[i]===o.include;
+      lab.classList.remove("ok","err");lab.classList.add(right?"ok":"err");
+      const cfb=lab.querySelector(".cfb");cfb.classList.remove("hidden");cfb.innerHTML=o.fb;
+      if(right)correct++;
+    });
+    const total=opts.length,pct=Math.round(correct/total*100);
+    const res=panel.querySelector("#cres");
+    res.className="fb show "+(pct>=70?"good":"bad");
+    res.innerHTML=`<h4>${correct}/${total} criterios correctos (${pct}%)</h4><div>Verde = acertaste si era inclusión o exclusión. Rojo = revisa el fundamento mostrado.</div>`;
+    panel.querySelector("#cnext").classList.remove("hidden");
+  }
+  function renderTiabCards(){
+    const list=panel.querySelector("#tiabs");list.innerHTML="";
+    curScn._done=0;curScn._ok=0;
+    curScn.articles.forEach(a=>{
+      const card=el("div","tiab");
+      card.innerHTML=`<div class="ttl">📄 ${a.title}</div><div class="abs">${a.abstract}</div>
+        <div class="actions"><button class="btn ghost sm" data-d="include">✔ Incluir</button><button class="btn ghost sm" data-d="exclude">✘ Excluir</button></div>
+        <div class="verdict"></div>`;
+      const btns=card.querySelectorAll("button");
+      btns.forEach(b=>b.onclick=()=>decideTiab(card,btns,a,b.dataset.d));
+      list.appendChild(card);
+    });
+  }
+  function decideTiab(card,btns,a,decision){
+    if(card.dataset.answered)return;card.dataset.answered="1";
+    btns.forEach(b=>b.disabled=true);
+    const ok=decision===a.decision;card.classList.add(ok?"ok":"err");
+    const v=card.querySelector(".verdict");v.className="verdict show "+(ok?"good":"bad");
+    const lab=a.decision==="include"?"INCLUIR":"EXCLUIR";
+    v.innerHTML=`<b>${ok?"✅ Correcto":"❌ Incorrecto"}</b> — Decisión correcta: <b>${lab}</b>.<br>${a.reason}`;
+    curScn._done++;if(ok)curScn._ok++;
+    if(curScn._done===curScn.articles.length){
+      const s=panel.querySelector("#ssum"),pct=Math.round(curScn._ok/curScn._done*100);
+      s.className="fb show "+(pct>=70?"good":"bad");
+      s.innerHTML=`<h4>Cribado completado: ${curScn._ok}/${curScn._done} aciertos (${pct}%)</h4>
+        <div>${pct>=70?"¡Buen ojo metodológico! Distingues bien qué entra y qué no.":"Repasa los criterios PICOS: muchos errores vienen de confundir población o diseño."}</div>
+        <div style="margin-top:10px"><button class="btn sm" id="srest">↺ Reiniciar escenario</button> <button class="btn ghost sm" id="soth">Otros escenarios</button></div>`;
+      s.classList.remove("hidden");
+      panel.querySelector("#srest").onclick=()=>openScn(curScn.id);
+      panel.querySelector("#soth").onclick=()=>renderTiabList();
+    }
+  }
+
+  /* ---------- init ---------- */
+  buildTabs();
+  openTab("home");
+})();
+</script>
+</body>
+</html>
